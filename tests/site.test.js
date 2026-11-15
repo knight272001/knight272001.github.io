@@ -135,8 +135,20 @@ test("rss contains the two public posts", () => {
 });
 
 test("about and newsletter keep their embed markers", () => {
-  assert.match(read("about/index.html"), /<!-- BIO: 在這裡換成真正的自我介紹。 -->/);
+  const about = read("about/index.html");
+  assert.match(about, /<h1>關於<\/h1>/);
+  assert.match(about, /<!-- BIO: 在這裡換成真正的自我介紹。 -->/);
+  assert.match(about, /我是 SR71，一個在公私部門做了三十多年的媒體人。/);
+  assert.match(about, /「銀髮衝冠」這名字，原本是一罐髮蠟。/);
+  assert.match(about, /<blockquote>\s*<p>不服老、不盲從，敢於思考、敢於創造。<\/p>\s*<\/blockquote>/);
+  assert.doesNotMatch(about, /這頁還沒寫完/);
   assert.match(read("newsletter/index.html"), /<!-- NEWSLETTER_FORM: 之後把訂閱表單嵌入這裡。 -->/);
+});
+
+test("author name is SR71", () => {
+  assert.match(read("index.html"), /<meta name="author" content="SR71">/);
+  const feed = read("feed.xml");
+  assert.match(feed, /<dc:creator>SR71<\/dc:creator>/);
 });
 
 test("home identity and navigation", () => {
