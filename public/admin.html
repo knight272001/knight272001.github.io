@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://api.github.com; form-action 'none'; base-uri 'none'; frame-ancestors 'none'">
+<title>銀髮衝冠｜文章管理中心</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Noto Sans TC',sans-serif;color:#203047;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:25px auto;padding:0 18px}header{display:flex;justify-content:space-between;align-items:center;gap:15px}h1{font-size:1.65rem;margin-bottom:4px}h2{font-size:1.1rem}p,.help{color:#536174}a{color:#135ba6}.panel{background:white;padding:22px;border-radius:16px;margin:18px 0;box-shadow:0 3px 15px #23324a12}label{display:block;font-weight:700;margin:15px 0 5px}input,textarea,select{display:block;width:100%;border:1px solid #bac5d2;border-radius:9px;padding:11px;font:inherit;background:white;color:#203047}textarea{min-height:280px;line-height:1.7;resize:vertical}button{border:0;border-radius:10px;padding:12px 16px;cursor:pointer;font-weight:700;background:#1d456c;color:white;font:inherit}button.secondary{background:#e9eef5;color:#203047}button:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;gap:12px;flex-wrap:wrap}.row>div{flex:1;min-width:160px}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.muted{font-size:.88rem;color:#617083}.status{white-space:pre-wrap;border-radius:10px;padding:12px;background:#eaf2fd;margin-top:13px}.warning{background:#fff6e7;border-left:4px solid #d18a20;padding:12px;border-radius:5px}.hidden{display:none}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f4f8;padding:18px;border-radius:10px;max-height:470px;overflow:auto}#preview{margin-top:15px}small{font-size:.8rem}input[type=checkbox]{width:auto;display:inline}#existing{min-height:50px}footer{padding:15px 0 40px;text-align:center}
+</style>
+</head>
+<body><div class="wrap">
+<header><div><h1>銀髮衝冠｜文章管理中心</h1><p>長文與 Digest ・ 不用進 GitHub 編輯程式碼</p></div><a href="/">回網站首頁</a></header>
+<section class="panel"><h2>① 安全連線到 GitHub</h2>
+<p class="warning">此管理頁面網址是公開的，但沒有 GitHub 授權就不能修改文章。請在自己的裝置使用。請勿把權杖貼給任何人。權杖只保留在本頁記憶體，不會儲存到網站或瀏覽器儲存空間；關閉或重新整理後需要重新輸入。</p>
+<label for="token">GitHub Fine-grained Personal Access Token（權杖）</label><input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="貼上僅授權本儲存庫 Contents: Read and write 的權杖">
+<p class="muted">儲存庫固定為 <b>knight272001/knight272001.github.io</b>。建議權杖設短效期、僅授權本儲存庫。</p><div class="actions"><button id="connect">驗證授權並載入文章</button><button class="secondary" id="disconnect">清除權杖</button></div><div id="connection" class="status" role="status">尚未連線。</div>
+</section>
+<section class="panel"><h2>② 選擇文章</h2>
+<div class="row"><div><label for="kind">文章類型</label><select id="kind"><option value="exclusives">長文 Exclusive</option><option value="digests">每日 Digest</option></select></div><div><label for="existing">修改舊文章（選填）</label><select id="existing"><option value="">＋ 發布新文章</option></select></div></div>
+<div class="actions"><button class="secondary" id="new">清空並新增文章</button><button class="secondary" id="refresh">重新讀取文章清單</button></div>
+</section>
+<section class="panel"><h2>③ 撰寫與發布</h2>
+<label for="title">標題 *</label><input id="title" maxlength="300" placeholder="輸入文章標題">
+<div class="row"><div><label for="date">日期 *</label><input type="date" id="date"></div><div><label for="slug">文章網址代號（Slug） *</label><input id="slug" pattern="[A-Za-z0-9]+(-[A-Za-z0-9]+)*" placeholder="例如 freedom-2031"></div></div>
+<p class="muted">Digest 使用日期作為網址代號及檔名；長文只用英文字母、數字和半形連字號。編輯舊文章時不允許修改網址代號，以免產生重複檔案。</p>
+<label for="excerpt">摘要 *</label><input id="excerpt" maxlength="600" placeholder="顯示在首頁及文章列表的簡介">
+<label for="tags">標籤（以逗號分隔） *</label><input id="tags" placeholder="退休規劃, 自由人生">
+<label for="body">文章內文（支援 Markdown）</label><textarea id="body" placeholder="在此輸入文章...\n\n## 小標題\n\n這是內文。"></textarea>
+<p class="warning">請勿上傳個資或私密草稿。GitHub 儲存庫目前是公開的；即使設定 members: true 不顯示在網站，原始文章仍可從 GitHub 讀取。</p>
+<div class="actions"><button class="secondary" id="previewBtn">預覽 Markdown 原始內容</button><button id="publish">確認並發布到網站</button></div>
+<div id="status" class="status" role="status">請先連線後再發布。</div><div id="preview" class="hidden"><h2>準備送出的檔案</h2><pre id="previewText"></pre></div>
+</section>
+<footer class="muted">Silver Rebel 71 · 檔案寫入 GitHub 後由既有 GitHub Actions 部署。</footer></div>
+<script>
+'use strict';
+const OWNER='knight272001', REPO='knight272001.github.io', BRANCH='main';
+const $=id=>document.getElementById(id);
+let credential='', lists={exclusives:[],digests:[]}, selected=null;
+const today=(()=>{let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`})();
+$('date').value=today;
+function notice(msg,bad=false){$('status').textContent=msg;$('status').style.background=bad?'#ffeceb':'#eaf2fd'}
+function conn(msg,bad=false){$('connection').textContent=msg;$('connection').style.background=bad?'#ffeceb':'#eaf2fd'}
+function apiPath(path){return `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`}
+async function api(url,options={}){
+ if(!credential)throw Error('請先連線 GitHub。');
+ const res=await fetch(url,{...options,headers:{'Accept':'application/vnd.github+json','Authorization':`Bearer ${credential}`,'X-GitHub-Api-Version':'2022-11-28',...(options.headers||{})},cache:'no-store'});
+ let json=await res.json().catch(()=>({}));
+ if(!res.ok)throw Error(`GitHub API ${res.status}: ${json.message||'請檢查權杖權限與網路狀態'}`);
+ return json;
+}
+function encode64(text){const bytes=new TextEncoder().encode(text);let bin='';for(let i=0;i<bytes.length;i+=8192)bin+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(bin)}
+function decode64(content){const binary=atob(content.replace(/\s/g,''));const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));return new TextDecoder().decode(bytes)}
+function quoteYaml(s){return "'"+String(s).replace(/'/g,"''").replace(/\\\"/g,'"').replace(/[\r\n]+/g,' ').trim()+"'"}
+function makeMarkdown(){
+ const title=$('title').value.trim(), date=$('date').value, slug=$('slug').value.trim(), excerpt=$('excerpt').value.trim(), tags=$('tags').value.split(/[,，]/).map(t=>t.trim()).filter(Boolean),body=$('body').value.trim();
+ if(!title||!excerpt||!date||!slug||!tags.length||!body)throw Error('標題、日期、網址代號、摘要、標籤及內文都必須填寫。');
+ if(!/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(slug))throw Error('網址代號只能使用英文字母、數字和半形連字號。');
+ if($('kind').value==='digests'&&slug!==date)throw Error('Digest 的網址代號必須與日期完全相同。');
+ if(selected && slug!==selected.slug)throw Error('修改舊文章時不可改網址代號；如要換網址，請新增一篇文章。');
+ return `---\ntitle: ${quoteYaml(title)}\ndate: ${date}\nslug: ${slug}\nexcerpt: ${quoteYaml(excerpt)}\ntags:\n${tags.map(t=>'  - '+quoteYaml(t)).join('\n')}\n---\n\n${body}\n`;
+}
+function readFrontmatter(source){let m=source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);if(!m)throw Error('原文缺少 YAML frontmatter。');let h=m[1],fields={};for(let field of ['title','date','slug','excerpt']){let match=h.match(new RegExp('^'+field+':\\s*(.*)$','m'));fields[field]=match?match[1].trim().replace(/^'(.*)'$/s,'$1').replace(/''/g,"'").replace(/^"(.*)"$/s,'$1'):'';}
+ let tagsBlock=h.match(/^tags:\s*\n((?:\s+-.*\n?)*)/m);fields.tags=tagsBlock?tagsBlock[1].split(/\r?\n/).map(s=>s.replace(/^\s*-\s*/, '').trim().replace(/^'(.*)'$/s,'$1').replace(/''/g,"'")).filter(Boolean).join(', '):'';
+ fields.body=m[2].trim();return fields;
+}
+async function refresh(){for(const type of ['exclusives','digests']){lists[type]=(await api(apiPath(`content/${type}`)+'?ref='+BRANCH)).filter(f=>f.name.endsWith('.md')).sort((a,b)=>b.name.localeCompare(a.name));}fillList();}
+function fillList(){let k=$('kind').value;let list=$('existing');list.replaceChildren();list.add(new Option('＋ 發布新文章',''));for(let f of lists[k])list.add(new Option(f.name,f.path));}
+function reset(){selected=null;$('existing').value='';$('title').value='';$('date').value=today;$('slug').value=$('kind').value==='digests'?today:'';$('slug').readOnly=$('kind').value==='digests';$('excerpt').value='';$('tags').value='';$('body').value='';$('preview').classList.add('hidden');notice('已切換至新增文章。');}
+$('connect').onclick=async()=>{credential=$('token').value.trim();$('token').value='';try{if(!credential)throw Error('請貼上權杖。');await api(`https://api.github.com/repos/${OWNER}/${REPO}`);await refresh();conn('連線成功。文章清單已載入。');notice('可以開始編寫文章。');}catch(e){credential='';conn(e.message,true);}};
+$('disconnect').onclick=()=>{credential='';$('token').value='';lists={exclusives:[],digests:[]};fillList();conn('已清除本頁記憶體中的權杖。');notice('已登出。')};
+$('refresh').onclick=async()=>{try{await refresh();notice('文章清單已更新。')}catch(e){notice(e.message,true)}};
+$('kind').onchange=()=>{fillList();reset()};
+$('new').onclick=reset;
+$('date').onchange=()=>{if($('kind').value==='digests'&&!selected)$('slug').value=$('date').value};
+$('existing').onchange=async()=>{const path=$('existing').value;if(!path){reset();return;}try{let data=await api(apiPath(path)+'?ref='+BRANCH);let md=decode64(data.content),f=readFrontmatter(md);if(/^members:\s*true\s*$/m.test(md))throw Error('此文章標記 members: true。為避免在儲存時意外變成公開文章，後台不允許修改；請在 GitHub 編輯。');selected={path,sha:data.sha,slug:f.slug};$('title').value=f.title;$('date').value=f.date;$('slug').value=f.slug;$('slug').readOnly=true;$('excerpt').value=f.excerpt;$('tags').value=f.tags;$('body').value=f.body;notice('已載入 '+path+'。發布後會更新原檔，而不是新增副本。');}catch(e){selected=null;notice(e.message,true)}};
+$('previewBtn').onclick=()=>{try{$('previewText').textContent=makeMarkdown();$('preview').classList.remove('hidden');notice('請檢查檔案內容。')}catch(e){notice(e.message,true)}};
+$('publish').onclick=async()=>{try{const markdown=makeMarkdown(),slug=$('slug').value.trim(),type=$('kind').value,path=`content/${type}/${slug}.md`;if(selected&&path!==selected.path)throw Error('目前文章路徑和已載入的文章不一致。');if(!credential)throw Error('請先驗證權杖。');if(!confirm(`確認${selected?'更新':'新增'}文章？\n${$('title').value}\n\n${path}\n\n這會直接提交到 main 並觸發網站發布。`))return;
+ notice('正在檢查檔案與提交文章……');let existingSha=selected?.sha;
+ if(!selected){try{const old=await api(apiPath(path)+'?ref='+BRANCH);if(old.sha)throw Error('相同網址代號的文章已存在，請從舊文章清單載入後修改。');}catch(e){if(!String(e.message).includes('GitHub API 404'))throw e;}}
+ const payload={message:`${selected?'Update':'Publish'} ${type}: ${slug}`,content:encode64(markdown),branch:BRANCH};if(existingSha)payload.sha=existingSha;
+ const saved=await api(apiPath(path),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+ selected={path,sha:saved.content.sha,slug};await refresh();$('existing').value=path;
+ notice(`提交成功！GitHub 已收到文章。\n儲存庫檔案：${path}\n請至 Actions 查看建置是否成功，再檢查網站。`);
+ }catch(e){notice(e.message,true)}};
+reset();
+</script></body></html>
