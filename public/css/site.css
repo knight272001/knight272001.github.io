@@ -472,6 +472,17 @@ html[data-js] .theme-toggle {
   margin: 0 0 1.15em;
 }
 
+.prose small {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.prose p:has(small) {
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
+
 .prose h2 {
   margin: 1.8em 0 0.55em;
   font-size: 1.45rem;
