@@ -1,0 +1,27 @@
+---
+permalink: /feed.xml
+eleventyExcludeFromCollections: true
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>{{ site.name }}｜{{ site.nameEn }}</title>
+  <link>{{ site.url }}/</link>
+  <atom:link href="{{ site.url }}/feed.xml" rel="self" type="application/rss+xml"/>
+  <description>{{ site.tagline }}</description>
+  <language>zh-Hant</language>
+  <lastBuildDate>{{ "" | rssDate }}</lastBuildDate>
+  {%- for post in collections.publicPosts %}
+  {%- if post.url %}
+  <item>
+    <title>{{ post.data.title }}</title>
+    <link>{{ site.url }}{{ post.url }}</link>
+    <guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
+    <pubDate>{{ post.date | rssDate }}</pubDate>
+    <description>{{ post.data.excerpt }}</description>
+    <category>{% if post.data.kind == "exclusive" %}長文{% else %}Digest{% endif %}</category>
+  </item>
+  {%- endif %}
+  {%- endfor %}
+</channel>
+</rss>

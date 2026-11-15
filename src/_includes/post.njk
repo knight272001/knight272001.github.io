@@ -1,0 +1,25 @@
+---
+layout: base.njk
+---
+<article class="post">
+  <header class="post-header">
+    <p class="kicker"><span>{{ kicker }}</span>{% if kickerEn %} <span class="kicker-en">{{ kickerEn }}</span>{% endif %}</p>
+    <h1>{{ title }}</h1>
+    <p class="meta"><time datetime="{{ date | isoDate }}">{{ date | displayDate }}</time></p>
+    {% if tags %}
+    <ul class="tags">
+      {% if tags is string %}
+      <li>{{ tags }}</li>
+      {% else %}
+      {% for tag in tags %}
+      <li>{{ tag }}</li>
+      {% endfor %}
+      {% endif %}
+    </ul>
+    {% endif %}
+  </header>
+  <div class="prose">
+    {{ content | safe }}
+  </div>
+  <p class="back"><a href="/{{ section }}/">{{ backLabel }}</a></p>
+</article>

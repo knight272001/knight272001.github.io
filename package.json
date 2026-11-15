@@ -1,0 +1,16 @@
+{
+  "name": "silver-rebel",
+  "private": true,
+  "description": "銀髮衝冠｜Silver Rebel 71",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy",
+    "test": "node --test tests/posts.test.js && eleventy && node --test tests/site.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@11ty/eleventy": "^3.1.8"
+  }
+}
