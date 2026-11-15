@@ -118,20 +118,34 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/digests/",
     "https://knight272001.github.io/digests/2026-11-15/",
     "https://knight272001.github.io/exclusives/",
+    "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
     "https://knight272001.github.io/exclusives/sample-layout/",
     "https://knight272001.github.io/newsletter/",
   ]);
 });
 
-test("rss contains the two public posts", () => {
+test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 2);
+  assert.equal(feed.match(/<item>/g).length, 3);
   assert.match(feed, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
   assert.match(feed, /「範例 Digest」"今天沒有新聞"/);
+  assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/sample-layout\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-15\/<\/link>/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/beigang-chaotian-temple-with-mom\/<\/link>/);
+});
+
+test("beigang exclusive is public and listed", () => {
+  const listing = decode(read("exclusives/index.html"));
+  const post = read("exclusives/beigang-chaotian-temple-with-mom/index.html");
+  assert.match(listing, /春節前，帶老娘去北港朝天宮還願/);
+  assert.match(listing, /「範例文章」/);
+  assert.match(post, /datetime="2026-02-09"/);
+  assert.match(post, /2026年2月9日/);
+  assert.match(post, /<small>原刊於臉書，2026-02-09<\/small>/);
+  assert.match(post, /誌之。/);
 });
 
 test("about and newsletter keep their embed markers", () => {
