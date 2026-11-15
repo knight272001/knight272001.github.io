@@ -1,0 +1,26 @@
+---
+layout: base.njk
+permalink: /digests/
+pageTitle: 每日 Digest
+description: 每天的社會脈搏，短記。
+---
+<header class="page-header">
+  <p class="kicker"><span>每日 Digest</span></p>
+  <h1>每日 Digest</h1>
+  <p class="lede">每天的社會脈搏，短記。新的在上面。</p>
+</header>
+{% if collections.publicDigests.length %}
+<ul class="listing">
+  {% for item in collections.publicDigests %}
+  {% if item.url %}
+  <li>
+    <p class="meta"><time datetime="{{ item.date | isoDate }}">{{ item.date | displayDate }}</time></p>
+    <h2><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
+    <p class="excerpt">{{ item.data.excerpt }}</p>
+  </li>
+  {% endif %}
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">還沒有 Digest。</p>
+{% endif %}

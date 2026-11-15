@@ -1,0 +1,26 @@
+---
+layout: base.njk
+permalink: /exclusives/
+pageTitle: 長文
+description: 從影片整理的長文。
+---
+<header class="page-header">
+  <p class="kicker"><span>長文</span> <span class="kicker-en">Exclusive</span></p>
+  <h1>長文</h1>
+  <p class="lede">從影片整理的長文。新的在上面。</p>
+</header>
+{% if collections.publicExclusives.length %}
+<ul class="listing">
+  {% for item in collections.publicExclusives %}
+  {% if item.url %}
+  <li>
+    <p class="meta"><time datetime="{{ item.date | isoDate }}">{{ item.date | displayDate }}</time></p>
+    <h2><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
+    <p class="excerpt">{{ item.data.excerpt }}</p>
+  </li>
+  {% endif %}
+  {% endfor %}
+</ul>
+{% else %}
+<p class="empty">還沒有長文。</p>
+{% endif %}

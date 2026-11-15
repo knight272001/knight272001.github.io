@@ -1,0 +1,47 @@
+---
+layout: base.njk
+permalink: /
+---
+<section class="hero">
+  <p class="eyebrow"><span class="eyebrow-en">{{ site.nameEn }}</span><span class="eyebrow-zh">{{ site.subtitle }}</span></p>
+  <h1>{{ site.name }}</h1>
+  <p class="tagline">{{ site.taglineLead }}<br>{{ site.taglineRest }}</p>
+</section>
+
+<section class="latest" aria-label="最新文章">
+  {% set exclusive = collections.publicExclusives[0] %}
+  {% set digest = collections.publicDigests[0] %}
+  <article>
+    <p class="kicker"><span>最新長文</span> <span class="kicker-en">Exclusive</span></p>
+    {% if exclusive %}
+    <h2><a href="{{ exclusive.url }}">{{ exclusive.data.title }}</a></h2>
+    <p class="meta"><time datetime="{{ exclusive.date | isoDate }}">{{ exclusive.date | displayDate }}</time></p>
+    <p class="excerpt">{{ exclusive.data.excerpt }}</p>
+    <p class="more"><a href="{{ exclusive.url }}">讀這篇</a></p>
+    {% else %}
+    <p>還沒有長文。</p>
+    {% endif %}
+  </article>
+  <article>
+    <p class="kicker"><span>最新 Digest</span></p>
+    {% if digest %}
+    <h2><a href="{{ digest.url }}">{{ digest.data.title }}</a></h2>
+    <p class="meta"><time datetime="{{ digest.date | isoDate }}">{{ digest.date | displayDate }}</time></p>
+    <p class="excerpt">{{ digest.data.excerpt }}</p>
+    <p class="more"><a href="{{ digest.url }}">讀這則</a></p>
+    {% else %}
+    <p>還沒有 Digest。</p>
+    {% endif %}
+  </article>
+</section>
+
+<section class="block">
+  <h2>這個網站</h2>
+  <p>長文從影片來，把一件事說完。Digest 是每天的短記，看社會脈搏。脾氣就一種：不服老，不盲從。</p>
+</section>
+
+<section class="block">
+  <h2>訂閱</h2>
+  <p>新的長文和 Digest，以後寄到信箱。現在還沒接上服務。</p>
+  <p class="more"><a href="/newsletter/">前往訂閱頁</a></p>
+</section>
