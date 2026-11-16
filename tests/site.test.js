@@ -119,6 +119,7 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/digests/2026-11-15/",
     "https://knight272001.github.io/exclusives/",
     "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
+    "https://knight272001.github.io/exclusives/four-beauties-screen-liquor/",
     "https://knight272001.github.io/exclusives/national-day-gongxi-mp-training-center/",
     "https://knight272001.github.io/exclusives/sample-layout/",
     "https://knight272001.github.io/newsletter/",
@@ -129,15 +130,17 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 4);
+  assert.equal(feed.match(/<item>/g).length, 5);
   assert.match(feed, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
   assert.match(feed, /「範例 Digest」"今天沒有新聞"/);
   assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(feed, /中華民國生日快樂！想起林口公西的大操場/);
+  assert.match(feed, /四大美人屏風酒/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/sample-layout\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-15\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/beigang-chaotian-temple-with-mom\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/national-day-gongxi-mp-training-center\/<\/link>/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/four-beauties-screen-liquor\/<\/link>/);
 });
 
 test("beigang exclusive is public and listed", () => {
@@ -145,6 +148,7 @@ test("beigang exclusive is public and listed", () => {
   const post = read("exclusives/beigang-chaotian-temple-with-mom/index.html");
   assert.match(listing, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(listing, /中華民國生日快樂！想起林口公西的大操場/);
+  assert.match(listing, /四大美人屏風酒/);
   assert.match(listing, /「範例文章」/);
   assert.match(post, /datetime="2026-02-09"/);
   assert.match(post, /2026年2月9日/);
