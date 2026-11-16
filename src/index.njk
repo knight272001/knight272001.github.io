@@ -2,6 +2,7 @@
 layout: base.njk
 permalink: /
 ---
+{% import "subscribe.njk" as sub %}
 <section class="hero">
   <p class="eyebrow"><span class="eyebrow-en">{{ site.nameEn }}</span><span class="eyebrow-zh">{{ site.subtitle }}</span></p>
   <h1>{{ site.name }}</h1>
@@ -42,6 +43,5 @@ permalink: /
 
 <section class="block">
   <h2>訂閱</h2>
-  <p>新的長文和 Digest，以後寄到信箱。現在還沒接上服務。</p>
-  <p class="more"><a href="/newsletter/">前往訂閱頁</a></p>
+  {{ sub.form("home-email", true, false) | safe }}
 </section>

@@ -582,16 +582,74 @@ html[data-js] .theme-toggle {
   margin: 2.4rem 0 0;
 }
 
-.form-slot {
-  margin-top: 1.5rem;
-  padding: 1.1rem 1rem;
-  border: 1.5px dashed var(--ink-soft);
-  background: var(--bg-elev);
+.signup {
+  max-width: var(--measure);
 }
 
-.form-slot p {
+.signup form {
   margin: 0;
+}
+
+.signup label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.signup-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.signup input[type="email"] {
+  flex: 1 1 14rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--bg-elev);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.signup input::placeholder {
   color: var(--ink-soft);
+}
+
+.signup button {
+  min-height: 2.75rem;
+  padding: 0.55rem 1.15rem;
+  border: 1px solid var(--seal);
+  background: var(--seal);
+  color: var(--seal-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.signup button:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+}
+
+.signup-note {
+  margin: 0.75rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.signup-compact {
+  margin-top: 0.4rem;
+}
+
+.post .signup-compact {
+  margin-top: 2.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
 }
 
 main .wrap {

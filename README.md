@@ -45,7 +45,7 @@ members: true
 
 自我介紹在 `src/about.njk`。註解 `BIO:` 下面那段換成你自己的話。
 
-訂閱表單接上之後，嵌在 `src/newsletter.njk` 註解 `NEWSLETTER_FORM:` 那一區。
+訂閱表單在 `src/_includes/subscribe.njk`，訂閱頁是 `src/newsletter.njk`。
 
 網站上只用銀髮衝冠 / Silver Rebel 71，不要放戶籍姓名。
 

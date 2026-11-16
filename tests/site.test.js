@@ -160,7 +160,28 @@ test("about and newsletter keep their embed markers", () => {
   assert.match(about, /「銀髮衝冠」這名字，原本是一罐髮蠟。/);
   assert.match(about, /<blockquote>\s*<p>不服老、不盲從，敢於思考、敢於創造。<\/p>\s*<\/blockquote>/);
   assert.doesNotMatch(about, /這頁還沒寫完/);
-  assert.match(read("newsletter/index.html"), /<!-- NEWSLETTER_FORM: 之後把訂閱表單嵌入這裡。 -->/);
+});
+
+test("newsletter form posts to Kit", () => {
+  const newsletter = read("newsletter/index.html");
+  const home = read("index.html");
+  const exclusive = read("exclusives/sample-layout/index.html");
+  const digest = read("digests/2026-11-15/index.html");
+  const form = /<form action="https:\/\/app\.kit\.com\/forms\/10194228\/subscriptions" method="post">[\s\S]*name="email_address"[\s\S]*type="email"[\s\S]*<\/form>/;
+
+  assert.match(newsletter, form);
+  assert.match(newsletter, /免費訂閱，新長文上線當天寄給你；隨時可以退訂。/);
+  assert.match(newsletter, />訂閱</);
+  assert.doesNotMatch(newsletter, /<!-- NEWSLETTER_FORM:/);
+  assert.doesNotMatch(newsletter, /還沒接上服務/);
+
+  assert.match(home, form);
+  assert.match(home, /href="\/newsletter\/"/);
+
+  assert.match(exclusive, form);
+  assert.match(exclusive, /href="\/newsletter\/"/);
+  assert.doesNotMatch(digest, /forms\/10194228/);
+  assert.doesNotMatch(newsletter, /<script[^>]+kit\.com/i);
 });
 
 test("author name is SR71", () => {
