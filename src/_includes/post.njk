@@ -1,6 +1,7 @@
 ---
 layout: base.njk
 ---
+{% import "subscribe.njk" as sub %}
 <article class="post">
   <header class="post-header">
     <p class="kicker"><span>{{ kicker }}</span>{% if kickerEn %} <span class="kicker-en">{{ kickerEn }}</span>{% endif %}</p>
@@ -21,5 +22,8 @@ layout: base.njk
   <div class="prose">
     {{ content | safe }}
   </div>
+  {% if kind == "exclusive" %}
+  {{ sub.form("post-email", true, true) | safe }}
+  {% endif %}
   <p class="back"><a href="/{{ section }}/">{{ backLabel }}</a></p>
 </article>

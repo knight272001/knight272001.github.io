@@ -1,0 +1,18 @@
+{% macro form(fieldId, compact, heading) %}
+<section class="signup{% if compact %} signup-compact{% endif %}" aria-label="訂閱">
+  {% if heading %}
+  <p class="kicker"><span>訂閱</span></p>
+  {% endif %}
+  <form action="https://app.kit.com/forms/10194228/subscriptions" method="post">
+    <label for="{{ fieldId }}">你的 Email</label>
+    <div class="signup-row">
+      <input id="{{ fieldId }}" name="email_address" type="email" required placeholder="你的 Email" autocomplete="email" inputmode="email">
+      <button type="submit">訂閱</button>
+    </div>
+  </form>
+  <p class="signup-note">免費訂閱，新長文上線當天寄給你；隨時可以退訂。</p>
+  {% if compact %}
+  <p class="more"><a href="/newsletter/">前往訂閱頁</a></p>
+  {% endif %}
+</section>
+{% endmacro %}
