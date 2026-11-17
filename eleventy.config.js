@@ -1,20 +1,9 @@
-const { createRequire } = require("module");
 const { formatDisplay, formatIso, formatRss } = require("./lib/dates");
-const { isContentMarkdown, isHidden, onlyPublic, validatePost } = require("./lib/posts");
+const { createMarkdown } = require("./lib/markdown");
+const { absoluteUrl, isContentMarkdown, isHidden, onlyPublic, validatePost } = require("./lib/posts");
 
 module.exports = function (eleventyConfig) {
-  const requireFromEleventy = createRequire(require.resolve("@11ty/eleventy"));
-  const MarkdownIt = requireFromEleventy("markdown-it");
-
-  eleventyConfig.setLibrary(
-    "md",
-    MarkdownIt({
-      html: true,
-      breaks: false,
-      linkify: false,
-      typographer: false,
-    })
-  );
+  eleventyConfig.setLibrary("md", createMarkdown());
 
   // members: true 必須從每個公開出口消失。
   // preprocessor 不處理檔案；permalink false 不寫 HTML；公開集合再濾一次。
@@ -42,6 +31,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("displayDate", formatDisplay);
   eleventyConfig.addFilter("isoDate", formatIso);
+  eleventyConfig.addFilter("absoluteUrl", absoluteUrl);
   eleventyConfig.addFilter("rssDate", (value) => {
     if (value == null || value === "") return formatRss(new Date());
     return formatRss(value);

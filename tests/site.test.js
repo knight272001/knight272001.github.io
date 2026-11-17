@@ -98,7 +98,13 @@ test("quoted titles survive into the pages", () => {
 });
 
 test("members posts are absent from every public file", () => {
-  const banned = ["公開網站不該出現這句", "會員限定，不應公開", "members-sample"];
+  const banned = [
+    "公開網站不該出現這句",
+    "會員限定，不應公開",
+    "members-sample",
+    "members-only-cover",
+    "會員限定封面不該公開",
+  ];
   assert.equal(fs.existsSync(path.join(site, "exclusives/members-sample/index.html")), false);
 
   for (const file of walk(site)) {
@@ -215,6 +221,42 @@ test("404 and robots", () => {
   assert.match(read("404.html"), /noindex/);
   assert.match(read("404.html"), /找不到/);
   assert.match(read("robots.txt"), /Sitemap: https:\/\/knight272001\.github\.io\/sitemap\.xml/);
+});
+
+test("open graph title and description are on every page, without an image until a cover exists", () => {
+  const home = read("index.html");
+  const about = read("about/index.html");
+  const post = read("exclusives/sample-layout/index.html");
+  const digest = read("digests/2026-11-15/index.html");
+
+  assert.match(home, /property="og:title" content="銀髮衝冠｜Silver Rebel 71"/);
+  assert.match(home, /property="og:description" content="銀髮衝冠的長文和每日 Digest。不服老、不盲從，敢於思考、敢於創造。"/);
+  assert.match(home, /property="og:type" content="website"/);
+  assert.match(home, /name="twitter:card" content="summary"/);
+  assert.doesNotMatch(home, /property="og:image"/);
+
+  assert.match(about, /property="og:title" content="關於｜銀髮衝冠"/);
+  assert.match(about, /property="og:description" content="關於銀髮衝冠。"/);
+  assert.doesNotMatch(about, /property="og:image"/);
+
+  assert.match(post, /property="og:type" content="article"/);
+  assert.match(post, /property="og:title"/);
+  assert.match(post, /property="og:description"/);
+  assert.match(post, /name="twitter:card" content="summary"/);
+  assert.doesNotMatch(post, /property="og:image"/);
+  assert.doesNotMatch(digest, /property="og:image"/);
+  assert.doesNotMatch(post, /class="post-cover"/);
+  assert.doesNotMatch(read("exclusives/index.html"), /class="thumb"/);
+  assert.doesNotMatch(read("digests/index.html"), /class="thumb"/);
+});
+
+test("photo captions and covers use the prose palette", () => {
+  const css = read("css/site.css");
+  assert.match(css, /\.prose figure \{/);
+  assert.match(css, /\.prose figcaption \{[^}]*color:\s*var\(--ink-soft\)/);
+  assert.match(css, /\.post-cover img \{[^}]*width:\s*100%/);
+  assert.match(css, /\.thumb \{[^}]*width:\s*100%/);
+  assert.match(css, /@media \(min-width: 800px\) \{[^}]*\.listing li:has\(\.thumb\)/);
 });
 
 test("text colors clear the contrast bar", () => {

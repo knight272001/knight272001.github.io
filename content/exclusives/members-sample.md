@@ -5,6 +5,8 @@ slug: members-sample
 excerpt: '這篇標了 members，公開頁面不該出現。'
 tags:
   - 範例
+cover: /assets/images/members-only-cover.jpg
+coverAlt: 會員限定封面不該公開
 members: true
 ---
 

@@ -58,9 +58,11 @@ function makeMarkdown(){
  if(!/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(slug))throw Error('網址代號只能使用英文字母、數字和半形連字號。');
  if($('kind').value==='digests'&&slug!==date)throw Error('Digest 的網址代號必須與日期完全相同。');
  if(selected && slug!==selected.slug)throw Error('修改舊文章時不可改網址代號；如要換網址，請新增一篇文章。');
- return `---\ntitle: ${quoteYaml(title)}\ndate: ${date}\nslug: ${slug}\nexcerpt: ${quoteYaml(excerpt)}\ntags:\n${tags.map(t=>'  - '+quoteYaml(t)).join('\n')}\n---\n\n${body}\n`;
+ const cover=selected&&selected.cover?`\ncover: ${quoteYaml(selected.cover)}`:'';
+ const coverAlt=selected&&selected.coverAlt?`\ncoverAlt: ${quoteYaml(selected.coverAlt)}`:'';
+ return `---\ntitle: ${quoteYaml(title)}\ndate: ${date}\nslug: ${slug}\nexcerpt: ${quoteYaml(excerpt)}\ntags:\n${tags.map(t=>'  - '+quoteYaml(t)).join('\n')}${cover}${coverAlt}\n---\n\n${body}\n`;
 }
-function readFrontmatter(source){let m=source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);if(!m)throw Error('原文缺少 YAML frontmatter。');let h=m[1],fields={};for(let field of ['title','date','slug','excerpt']){let match=h.match(new RegExp('^'+field+':\\s*(.*)$','m'));fields[field]=match?match[1].trim().replace(/^'(.*)'$/s,'$1').replace(/''/g,"'").replace(/^"(.*)"$/s,'$1'):'';}
+function readFrontmatter(source){let m=source.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);if(!m)throw Error('原文缺少 YAML frontmatter。');let h=m[1],fields={};for(let field of ['title','date','slug','excerpt','cover','coverAlt']){let match=h.match(new RegExp('^'+field+':\\s*(.*)$','m'));fields[field]=match?match[1].trim().replace(/^'(.*)'$/s,'$1').replace(/''/g,"'").replace(/^"(.*)"$/s,'$1'):'';}
  let tagsBlock=h.match(/^tags:\s*\n((?:\s+-.*\n?)*)/m);fields.tags=tagsBlock?tagsBlock[1].split(/\r?\n/).map(s=>s.replace(/^\s*-\s*/, '').trim().replace(/^'(.*)'$/s,'$1').replace(/''/g,"'")).filter(Boolean).join(', '):'';
  fields.body=m[2].trim();return fields;
 }
@@ -73,7 +75,7 @@ $('refresh').onclick=async()=>{try{await refresh();notice('文章清單已更新
 $('kind').onchange=()=>{fillList();reset()};
 $('new').onclick=reset;
 $('date').onchange=()=>{if($('kind').value==='digests'&&!selected)$('slug').value=$('date').value};
-$('existing').onchange=async()=>{const path=$('existing').value;if(!path){reset();return;}try{let data=await api(apiPath(path)+'?ref='+BRANCH);let md=decode64(data.content),f=readFrontmatter(md);if(/^members:\s*true\s*$/m.test(md))throw Error('此文章標記 members: true。為避免在儲存時意外變成公開文章，後台不允許修改；請在 GitHub 編輯。');selected={path,sha:data.sha,slug:f.slug};$('title').value=f.title;$('date').value=f.date;$('slug').value=f.slug;$('slug').readOnly=true;$('excerpt').value=f.excerpt;$('tags').value=f.tags;$('body').value=f.body;notice('已載入 '+path+'。發布後會更新原檔，而不是新增副本。');}catch(e){selected=null;notice(e.message,true)}};
+$('existing').onchange=async()=>{const path=$('existing').value;if(!path){reset();return;}try{let data=await api(apiPath(path)+'?ref='+BRANCH);let md=decode64(data.content),f=readFrontmatter(md);if(/^members:\s*true\s*$/m.test(md))throw Error('此文章標記 members: true。為避免在儲存時意外變成公開文章，後台不允許修改；請在 GitHub 編輯。');selected={path,sha:data.sha,slug:f.slug,cover:f.cover,coverAlt:f.coverAlt};$('title').value=f.title;$('date').value=f.date;$('slug').value=f.slug;$('slug').readOnly=true;$('excerpt').value=f.excerpt;$('tags').value=f.tags;$('body').value=f.body;notice('已載入 '+path+'。發布後會更新原檔，而不是新增副本。');}catch(e){selected=null;notice(e.message,true)}};
 $('previewBtn').onclick=()=>{try{$('previewText').textContent=makeMarkdown();$('preview').classList.remove('hidden');notice('請檢查檔案內容。')}catch(e){notice(e.message,true)}};
 $('publish').onclick=async()=>{try{const markdown=makeMarkdown(),slug=$('slug').value.trim(),type=$('kind').value,path=`content/${type}/${slug}.md`;if(selected&&path!==selected.path)throw Error('目前文章路徑和已載入的文章不一致。');if(!credential)throw Error('請先驗證權杖。');if(!confirm(`確認${selected?'更新':'新增'}文章？\n${$('title').value}\n\n${path}\n\n這會直接提交到 main 並觸發網站發布。`))return;
  notice('正在檢查檔案與提交文章……');let existingSha=selected?.sha;
