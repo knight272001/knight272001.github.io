@@ -91,7 +91,7 @@ test("quoted titles survive into the pages", () => {
   assert.match(exclusive, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
   assert.match(exclusive, /"雙引號"/);
   assert.match(digest, /「範例 Digest」"今天沒有新聞"/);
-  assert.match(home, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
+  assert.match(home, /螢幕後面那本經/);
   assert.match(home, /「範例 Digest」"今天沒有新聞"/);
   assert.match(exclusive, /2026年11月15日/);
   assert.match(exclusive, /datetime="2026-11-15"/);
@@ -124,6 +124,7 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/digests/",
     "https://knight272001.github.io/digests/2026-11-15/",
     "https://knight272001.github.io/exclusives/",
+    "https://knight272001.github.io/exclusives/2026-11-17-screen-behind/",
     "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
     "https://knight272001.github.io/exclusives/four-beauties-screen-liquor/",
     "https://knight272001.github.io/exclusives/national-day-gongxi-mp-training-center/",
@@ -136,12 +137,14 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 5);
+  assert.equal(feed.match(/<item>/g).length, 6);
   assert.match(feed, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
   assert.match(feed, /「範例 Digest」"今天沒有新聞"/);
   assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(feed, /中華民國生日快樂！想起林口公西的大操場/);
   assert.match(feed, /四大美人屏風酒/);
+  assert.match(feed, /螢幕後面那本經/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/2026-11-17-screen-behind\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/sample-layout\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-15\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/beigang-chaotian-temple-with-mom\/<\/link>/);
@@ -246,8 +249,34 @@ test("open graph title and description are on every page, without an image until
   assert.doesNotMatch(post, /property="og:image"/);
   assert.doesNotMatch(digest, /property="og:image"/);
   assert.doesNotMatch(post, /class="post-cover"/);
-  assert.doesNotMatch(read("exclusives/index.html"), /class="thumb"/);
+  assert.match(read("exclusives/index.html"), /class="thumb"/);
   assert.doesNotMatch(read("digests/index.html"), /class="thumb"/);
+});
+
+test("screen-behind exclusive is public with a cover and literal asterisks", () => {
+  const post = decode(read("exclusives/2026-11-17-screen-behind/index.html"));
+  const listing = decode(read("exclusives/index.html"));
+  const home = decode(read("index.html"));
+  const image = "https://knight272001.github.io/assets/images/trail-path.jpg";
+
+  assert.match(post, /datetime="2026-11-17"/);
+  assert.match(post, /2026年11月17日/);
+  assert.match(post, /<figure class="post-cover">\s*<img src="\/assets\/images\/trail-path.jpg" alt="林間步道，幾位行人走在樹蔭下" decoding="async">/);
+  assert.match(post, /<img src="\/assets\/images\/trail-path.jpg" alt="林間步道" loading="lazy" decoding="async">/);
+  assert.doesNotMatch(post, /<figcaption>/);
+  assert.match(post, /<p>\*{5} 以下這段文字摘自UDN STYLE之霍建華新劇報導，觀者自尋哦\*<\/p>/);
+  assert.match(post, /<p>\*{3}我摘錄完了\*{3}<\/p>/);
+  assert.doesNotMatch(post, /<hr/);
+  assert.doesNotMatch(post, /<em>我摘錄完了<\/em>|<strong>我摘錄完了<\/strong>/);
+  assert.match(post, /property="og:image" content="https:\/\/knight272001\.github\.io\/assets\/images\/trail-path\.jpg"/);
+  assert.match(post, /property="og:image:alt" content="林間步道，幾位行人走在樹蔭下"/);
+  assert.match(post, /name="twitter:card" content="summary_large_image"/);
+  assert.match(post, new RegExp(`name="twitter:image" content="${image.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`));
+  assert.match(post, /property="og:description" content="同學會檯面下的心情，社群上的光鮮亮麗，亂世裡顧好家人、做點公益，也便是了。"/);
+  assert.match(listing, /螢幕後面那本經/);
+  assert.match(listing, /src="\/assets\/images\/trail-path.jpg"/);
+  assert.match(home, /src="\/assets\/images\/trail-path.jpg"/);
+  assert.match(home, /href="\/exclusives\/2026-11-17-screen-behind\/"/);
 });
 
 test("photo captions and covers use the prose palette", () => {
