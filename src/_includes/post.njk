@@ -19,6 +19,11 @@ layout: base.njk
     </ul>
     {% endif %}
   </header>
+  {% if cover %}
+  <figure class="post-cover">
+    <img src="{{ cover }}" alt="{{ coverAlt or '' }}" decoding="async">
+  </figure>
+  {% endif %}
   <div class="prose">
     {{ content | safe }}
   </div>

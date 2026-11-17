@@ -15,6 +15,9 @@ permalink: /
   <article>
     <p class="kicker"><span>最新長文</span> <span class="kicker-en">Exclusive</span></p>
     {% if exclusive %}
+    {% if exclusive.data.cover %}
+    <img class="thumb" src="{{ exclusive.data.cover }}" alt="{{ exclusive.data.coverAlt or '' }}" loading="lazy" decoding="async">
+    {% endif %}
     <h2><a href="{{ exclusive.url }}">{{ exclusive.data.title }}</a></h2>
     <p class="meta"><time datetime="{{ exclusive.date | isoDate }}">{{ exclusive.date | displayDate }}</time></p>
     <p class="excerpt">{{ exclusive.data.excerpt }}</p>
@@ -26,6 +29,9 @@ permalink: /
   <article>
     <p class="kicker"><span>最新 Digest</span></p>
     {% if digest %}
+    {% if digest.data.cover %}
+    <img class="thumb" src="{{ digest.data.cover }}" alt="{{ digest.data.coverAlt or '' }}" loading="lazy" decoding="async">
+    {% endif %}
     <h2><a href="{{ digest.url }}">{{ digest.data.title }}</a></h2>
     <p class="meta"><time datetime="{{ digest.date | isoDate }}">{{ digest.date | displayDate }}</time></p>
     <p class="excerpt">{{ digest.data.excerpt }}</p>

@@ -91,14 +91,20 @@ test("quoted titles survive into the pages", () => {
   assert.match(exclusive, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
   assert.match(exclusive, /"雙引號"/);
   assert.match(digest, /「範例 Digest」"今天沒有新聞"/);
-  assert.match(home, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
+  assert.match(home, /螢幕後面那本經/);
   assert.match(home, /「範例 Digest」"今天沒有新聞"/);
   assert.match(exclusive, /2026年11月15日/);
   assert.match(exclusive, /datetime="2026-11-15"/);
 });
 
 test("members posts are absent from every public file", () => {
-  const banned = ["公開網站不該出現這句", "會員限定，不應公開", "members-sample"];
+  const banned = [
+    "公開網站不該出現這句",
+    "會員限定，不應公開",
+    "members-sample",
+    "members-only-cover",
+    "會員限定封面不該公開",
+  ];
   assert.equal(fs.existsSync(path.join(site, "exclusives/members-sample/index.html")), false);
 
   for (const file of walk(site)) {
@@ -118,6 +124,7 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/digests/",
     "https://knight272001.github.io/digests/2026-11-15/",
     "https://knight272001.github.io/exclusives/",
+    "https://knight272001.github.io/exclusives/2026-11-17-screen-behind/",
     "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
     "https://knight272001.github.io/exclusives/four-beauties-screen-liquor/",
     "https://knight272001.github.io/exclusives/national-day-gongxi-mp-training-center/",
@@ -130,12 +137,14 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 5);
+  assert.equal(feed.match(/<item>/g).length, 6);
   assert.match(feed, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
   assert.match(feed, /「範例 Digest」"今天沒有新聞"/);
   assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(feed, /中華民國生日快樂！想起林口公西的大操場/);
   assert.match(feed, /四大美人屏風酒/);
+  assert.match(feed, /螢幕後面那本經/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/2026-11-17-screen-behind\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/sample-layout\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-15\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/beigang-chaotian-temple-with-mom\/<\/link>/);
@@ -215,6 +224,68 @@ test("404 and robots", () => {
   assert.match(read("404.html"), /noindex/);
   assert.match(read("404.html"), /找不到/);
   assert.match(read("robots.txt"), /Sitemap: https:\/\/knight272001\.github\.io\/sitemap\.xml/);
+});
+
+test("open graph title and description are on every page, without an image until a cover exists", () => {
+  const home = read("index.html");
+  const about = read("about/index.html");
+  const post = read("exclusives/sample-layout/index.html");
+  const digest = read("digests/2026-11-15/index.html");
+
+  assert.match(home, /property="og:title" content="銀髮衝冠｜Silver Rebel 71"/);
+  assert.match(home, /property="og:description" content="銀髮衝冠的長文和每日 Digest。不服老、不盲從，敢於思考、敢於創造。"/);
+  assert.match(home, /property="og:type" content="website"/);
+  assert.match(home, /name="twitter:card" content="summary"/);
+  assert.doesNotMatch(home, /property="og:image"/);
+
+  assert.match(about, /property="og:title" content="關於｜銀髮衝冠"/);
+  assert.match(about, /property="og:description" content="關於銀髮衝冠。"/);
+  assert.doesNotMatch(about, /property="og:image"/);
+
+  assert.match(post, /property="og:type" content="article"/);
+  assert.match(post, /property="og:title"/);
+  assert.match(post, /property="og:description"/);
+  assert.match(post, /name="twitter:card" content="summary"/);
+  assert.doesNotMatch(post, /property="og:image"/);
+  assert.doesNotMatch(digest, /property="og:image"/);
+  assert.doesNotMatch(post, /class="post-cover"/);
+  assert.match(read("exclusives/index.html"), /class="thumb"/);
+  assert.doesNotMatch(read("digests/index.html"), /class="thumb"/);
+});
+
+test("screen-behind exclusive is public with a cover and literal asterisks", () => {
+  const post = decode(read("exclusives/2026-11-17-screen-behind/index.html"));
+  const listing = decode(read("exclusives/index.html"));
+  const home = decode(read("index.html"));
+  const image = "https://knight272001.github.io/assets/images/trail-path.jpg";
+
+  assert.match(post, /datetime="2026-11-17"/);
+  assert.match(post, /2026年11月17日/);
+  assert.match(post, /<figure class="post-cover">\s*<img src="\/assets\/images\/trail-path.jpg" alt="林間步道，幾位行人走在樹蔭下" decoding="async">/);
+  assert.match(post, /<img src="\/assets\/images\/trail-path.jpg" alt="林間步道" loading="lazy" decoding="async">/);
+  assert.doesNotMatch(post, /<figcaption>/);
+  assert.match(post, /<p>\*{5} 以下這段文字摘自UDN STYLE之霍建華新劇報導，觀者自尋哦\*<\/p>/);
+  assert.match(post, /<p>\*{3}我摘錄完了\*{3}<\/p>/);
+  assert.doesNotMatch(post, /<hr/);
+  assert.doesNotMatch(post, /<em>我摘錄完了<\/em>|<strong>我摘錄完了<\/strong>/);
+  assert.match(post, /property="og:image" content="https:\/\/knight272001\.github\.io\/assets\/images\/trail-path\.jpg"/);
+  assert.match(post, /property="og:image:alt" content="林間步道，幾位行人走在樹蔭下"/);
+  assert.match(post, /name="twitter:card" content="summary_large_image"/);
+  assert.match(post, new RegExp(`name="twitter:image" content="${image.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`));
+  assert.match(post, /property="og:description" content="同學會檯面下的心情，社群上的光鮮亮麗，亂世裡顧好家人、做點公益，也便是了。"/);
+  assert.match(listing, /螢幕後面那本經/);
+  assert.match(listing, /src="\/assets\/images\/trail-path.jpg"/);
+  assert.match(home, /src="\/assets\/images\/trail-path.jpg"/);
+  assert.match(home, /href="\/exclusives\/2026-11-17-screen-behind\/"/);
+});
+
+test("photo captions and covers use the prose palette", () => {
+  const css = read("css/site.css");
+  assert.match(css, /\.prose figure \{/);
+  assert.match(css, /\.prose figcaption \{[^}]*color:\s*var\(--ink-soft\)/);
+  assert.match(css, /\.post-cover img \{[^}]*width:\s*100%/);
+  assert.match(css, /\.thumb \{[^}]*width:\s*100%/);
+  assert.match(css, /@media \(min-width: 800px\) \{[^}]*\.listing li:has\(\.thumb\)/);
 });
 
 test("text colors clear the contrast bar", () => {

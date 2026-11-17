@@ -37,6 +37,33 @@ members: true
 
 `content/exclusives/members-sample.md` 是守這條規則的樣稿，網站上看不到。可以留著，也可以刪。
 
+## 照片與封面
+
+圖片放在 `assets/images/`。這個資料夾會跟網站一起發布。
+
+照片若要附說明，把說明寫在網址後面的引號裡，並在圖的前後各空一行，讓它自己成一段：
+
+```markdown
+![北港朝天宮](/assets/images/beigang.jpg "跟阿母在廟前。")
+```
+
+方括號裡是替代文字，給讀不出圖片的人。引號裡是顯示在圖下的說明，純文字。畫面上是一張圖，下面一行較小的字。沒寫引號裡的說明，就只顯示圖片：
+
+```markdown
+![北港朝天宮](/assets/images/beigang.jpg)
+```
+
+文章要封面時，在 frontmatter 加上路徑和替代文字。封面會出現在文章開頭、長文列表、Digest 列表和首頁最新文章。分享到別的網站時，預覽圖也用這張。
+
+```yaml
+cover: /assets/images/beigang.jpg
+coverAlt: 跟阿母在北港朝天宮前
+```
+
+`cover` 也可以寫成 `https://` 開頭的網址。兩個欄位都可以不寫。`members: true` 的文章不會把封面放到任何公開頁面。
+
+整個網站若要一張預設的分享預覽圖，在 `src/_data/site.js` 加上 `ogImage`，值是站內路徑或完整網址。文章沒有封面、網站也沒有 `ogImage` 時，頁面就不放預覽圖。
+
 ## 每日 Digest
 
 新增 `content/digests/YYYY-MM-DD.md`。frontmatter 跟長文一樣，`slug` 用當天日期，例如 `2026-11-15`。日期不加引號也可以。
@@ -47,9 +74,7 @@ members: true
 
 訂閱表單在 `src/_includes/subscribe.njk`，訂閱頁是 `src/newsletter.njk`。
 
-網站上只用銀髮衝冠 / Silver Rebel 71，不要放戶籍姓名。
-
-圖片放到 `assets/`，文章裡寫 `![說明](/assets/檔名.jpg)`。`assets` 會一起進網站。
+網站上只用銀髮衝冠 / Silver Rebel 71，不要放戶籍姓名。照片和封面見上面「照片與封面」。
 
 ## 本地預覽
 

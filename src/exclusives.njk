@@ -14,9 +14,14 @@ description: 從影片整理的長文。
   {% for item in collections.publicExclusives %}
   {% if item.url %}
   <li>
-    <p class="meta"><time datetime="{{ item.date | isoDate }}">{{ item.date | displayDate }}</time></p>
-    <h2><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
-    <p class="excerpt">{{ item.data.excerpt }}</p>
+    {% if item.data.cover %}
+    <img class="thumb" src="{{ item.data.cover }}" alt="{{ item.data.coverAlt or '' }}" loading="lazy" decoding="async">
+    {% endif %}
+    <div>
+      <p class="meta"><time datetime="{{ item.date | isoDate }}">{{ item.date | displayDate }}</time></p>
+      <h2><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
+      <p class="excerpt">{{ item.data.excerpt }}</p>
+    </div>
   </li>
   {% endif %}
   {% endfor %}
