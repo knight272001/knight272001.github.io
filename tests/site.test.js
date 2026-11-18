@@ -221,6 +221,23 @@ test("section pages mark the current nav item", () => {
   assert.doesNotMatch(exclusive, /href="\/digests\/"[^>]*aria-current/);
 });
 
+test("goatcounter is loaded once and counts stay hidden until fetched", () => {
+  const home = read("index.html");
+  const post = read("exclusives/four-beauties-screen-liquor/index.html");
+  const about = read("about/index.html");
+  const script = /<script data-goatcounter="https:\/\/silverrebel71\.goatcounter\.com\/count" async src="\/\/gc\.zgo\.at\/count\.js"><\/script>/g;
+
+  assert.equal(home.match(script).length, 1);
+  assert.equal(post.match(script).length, 1);
+  assert.equal(about.match(script).length, 1);
+  assert.match(home, /data-views="total"[^>]*>全站累計瀏覽 <span data-views-count><\/span> 次/);
+  assert.match(home, /hidden/);
+  assert.doesNotMatch(home, /本文閱讀/);
+  assert.match(post, /data-views="page"[^>]*>本文閱讀 <span data-views-count><\/span> 次/);
+  assert.doesNotMatch(about, /本文閱讀|全站累計瀏覽/);
+  assert.doesNotMatch(post, /本文閱讀 1 次/);
+});
+
 test("404 and robots", () => {
   assert.match(read("404.html"), /noindex/);
   assert.match(read("404.html"), /找不到/);
