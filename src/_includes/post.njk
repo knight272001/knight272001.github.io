@@ -6,7 +6,10 @@ layout: base.njk
   <header class="post-header">
     <p class="kicker"><span>{{ kicker }}</span>{% if kickerEn %} <span class="kicker-en">{{ kickerEn }}</span>{% endif %}</p>
     <h1>{{ title }}</h1>
-    <p class="meta"><time datetime="{{ date | isoDate }}">{{ date | displayDate }}</time></p>
+    <p class="meta">
+      <time datetime="{{ date | isoDate }}">{{ date | displayDate }}</time>
+      <span class="views" data-views="page" hidden>本文閱讀 <span data-views-count></span> 次</span>
+    </p>
     {% if tags %}
     <ul class="tags">
       {% if tags is string %}
