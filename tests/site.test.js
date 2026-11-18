@@ -66,9 +66,11 @@ test("public pages and feeds exist", () => {
   for (const rel of [
     "index.html",
     "exclusives/index.html",
-    "exclusives/sample-layout/index.html",
+    "exclusives/2026-11-17-screen-behind/index.html",
+    "exclusives/beigang-chaotian-temple-with-mom/index.html",
+    "exclusives/four-beauties-screen-liquor/index.html",
+    "exclusives/national-day-gongxi-mp-training-center/index.html",
     "digests/index.html",
-    "digests/2026-11-15/index.html",
     "about/index.html",
     "newsletter/index.html",
     "feed.xml",
@@ -83,18 +85,22 @@ test("public pages and feeds exist", () => {
   }
 });
 
-test("quoted titles survive into the pages", () => {
-  const exclusive = decode(read("exclusives/sample-layout/index.html"));
-  const digest = decode(read("digests/2026-11-15/index.html"));
+test("real posts render and the empty digest stays intact", () => {
+  const exclusive = decode(read("exclusives/beigang-chaotian-temple-with-mom/index.html"));
   const home = decode(read("index.html"));
+  const digests = decode(read("digests/index.html"));
 
-  assert.match(exclusive, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
-  assert.match(exclusive, /"雙引號"/);
-  assert.match(digest, /「範例 Digest」"今天沒有新聞"/);
+  assert.match(exclusive, /春節前，帶老娘去北港朝天宮還願/);
+  assert.match(exclusive, /2026年2月9日/);
+  assert.match(exclusive, /datetime="2026-02-09"/);
   assert.match(home, /螢幕後面那本經/);
-  assert.match(home, /「範例 Digest」"今天沒有新聞"/);
-  assert.match(exclusive, /2026年11月15日/);
-  assert.match(exclusive, /datetime="2026-11-15"/);
+  assert.match(home, /還沒有 Digest。/);
+  assert.match(digests, /class="empty"/);
+  assert.match(digests, /還沒有 Digest。/);
+  assert.doesNotMatch(home, /範例 Digest|範例文章|今天沒有新聞/);
+  assert.doesNotMatch(digests, /範例/);
+  assert.equal(fs.existsSync(path.join(site, "exclusives/sample-layout/index.html")), false);
+  assert.equal(fs.existsSync(path.join(site, "digests/2026-11-15/index.html")), false);
 });
 
 test("members posts are absent from every public file", () => {
@@ -122,13 +128,11 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/",
     "https://knight272001.github.io/about/",
     "https://knight272001.github.io/digests/",
-    "https://knight272001.github.io/digests/2026-11-15/",
     "https://knight272001.github.io/exclusives/",
     "https://knight272001.github.io/exclusives/2026-11-17-screen-behind/",
     "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
     "https://knight272001.github.io/exclusives/four-beauties-screen-liquor/",
     "https://knight272001.github.io/exclusives/national-day-gongxi-mp-training-center/",
-    "https://knight272001.github.io/exclusives/sample-layout/",
     "https://knight272001.github.io/newsletter/",
   ]);
 });
@@ -137,16 +141,13 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 6);
-  assert.match(feed, /「範例文章」"銀髮衝冠" 只是版面樣稿/);
-  assert.match(feed, /「範例 Digest」"今天沒有新聞"/);
+  assert.equal(feed.match(/<item>/g).length, 4);
+  assert.doesNotMatch(feed, /範例 Digest|範例文章|今天沒有新聞|sample-layout|2026-11-15/);
   assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(feed, /中華民國生日快樂！想起林口公西的大操場/);
   assert.match(feed, /四大美人屏風酒/);
   assert.match(feed, /螢幕後面那本經/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/2026-11-17-screen-behind\/<\/link>/);
-  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/sample-layout\/<\/link>/);
-  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-15\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/beigang-chaotian-temple-with-mom\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/national-day-gongxi-mp-training-center\/<\/link>/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/four-beauties-screen-liquor\/<\/link>/);
@@ -158,7 +159,7 @@ test("beigang exclusive is public and listed", () => {
   assert.match(listing, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(listing, /中華民國生日快樂！想起林口公西的大操場/);
   assert.match(listing, /四大美人屏風酒/);
-  assert.match(listing, /「範例文章」/);
+  assert.doesNotMatch(listing, /範例文章/);
   assert.match(post, /datetime="2026-02-09"/);
   assert.match(post, /2026年2月9日/);
   assert.match(post, /<small>原刊於臉書，2026-02-09<\/small>/);
@@ -178,8 +179,8 @@ test("about and newsletter keep their embed markers", () => {
 test("newsletter form posts to Kit", () => {
   const newsletter = read("newsletter/index.html");
   const home = read("index.html");
-  const exclusive = read("exclusives/sample-layout/index.html");
-  const digest = read("digests/2026-11-15/index.html");
+  const exclusive = read("exclusives/beigang-chaotian-temple-with-mom/index.html");
+  const digests = read("digests/index.html");
   const form = /<form action="https:\/\/app\.kit\.com\/forms\/10194228\/subscriptions" method="post">[\s\S]*name="email_address"[\s\S]*type="email"[\s\S]*<\/form>/;
 
   assert.match(newsletter, form);
@@ -193,7 +194,7 @@ test("newsletter form posts to Kit", () => {
 
   assert.match(exclusive, form);
   assert.match(exclusive, /href="\/newsletter\/"/);
-  assert.doesNotMatch(digest, /forms\/10194228/);
+  assert.doesNotMatch(digests, /forms\/10194228/);
   assert.doesNotMatch(newsletter, /<script[^>]+kit\.com/i);
 });
 
@@ -215,7 +216,7 @@ test("home identity and navigation", () => {
 });
 
 test("section pages mark the current nav item", () => {
-  const exclusive = read("exclusives/sample-layout/index.html");
+  const exclusive = read("exclusives/beigang-chaotian-temple-with-mom/index.html");
   assert.match(exclusive, /href="\/exclusives\/"[^>]*aria-current="page"/);
   assert.doesNotMatch(exclusive, /href="\/digests\/"[^>]*aria-current/);
 });
@@ -229,8 +230,8 @@ test("404 and robots", () => {
 test("open graph title and description are on every page, without an image until a cover exists", () => {
   const home = read("index.html");
   const about = read("about/index.html");
-  const post = read("exclusives/sample-layout/index.html");
-  const digest = read("digests/2026-11-15/index.html");
+  const post = read("exclusives/beigang-chaotian-temple-with-mom/index.html");
+  const digests = read("digests/index.html");
 
   assert.match(home, /property="og:title" content="銀髮衝冠｜Silver Rebel 71"/);
   assert.match(home, /property="og:description" content="銀髮衝冠的長文和每日 Digest。不服老、不盲從，敢於思考、敢於創造。"/);
@@ -247,10 +248,10 @@ test("open graph title and description are on every page, without an image until
   assert.match(post, /property="og:description"/);
   assert.match(post, /name="twitter:card" content="summary"/);
   assert.doesNotMatch(post, /property="og:image"/);
-  assert.doesNotMatch(digest, /property="og:image"/);
+  assert.doesNotMatch(digests, /property="og:image"/);
   assert.doesNotMatch(post, /class="post-cover"/);
   assert.match(read("exclusives/index.html"), /class="thumb"/);
-  assert.doesNotMatch(read("digests/index.html"), /class="thumb"/);
+  assert.doesNotMatch(digests, /class="thumb"/);
 });
 
 test("screen-behind exclusive is public with a cover and literal asterisks", () => {
