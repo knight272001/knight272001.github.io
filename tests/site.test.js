@@ -279,10 +279,27 @@ test("screen-behind exclusive is public with a cover and literal asterisks", () 
   assert.match(home, /href="\/exclusives\/2026-11-17-screen-behind\/"/);
 });
 
+test("four beauties post shows the bottle photo after the porcelain description", () => {
+  const post = read("exclusives/four-beauties-screen-liquor/index.html");
+  const bottle = "想像一下，就是四片白瓷方瓶，上面彩繪了西施、王昭君、貂蟬、楊貴妃四位美女，裝滿了陳年極品高粱，簡單說，這組酒的空酒瓶就被出價 NTD 1800～2000。";
+  const next = "愛朋友的老爸，有一天終於決定為了朋友們，犧牲自己珍愛的四大美人。";
+  const figure = '<figure><img src="/assets/images/four-beauties-bottles.jpg" alt="四大美人屏風酒的四支瓷瓶" loading="lazy" decoding="async"><figcaption>四大美人屏風酒空瓶可以賣到1500元台幣，別亂丟了喔！</figcaption></figure>';
+  const body = post.slice(post.indexOf('<div class="prose">'));
+  const atBottle = body.indexOf(bottle);
+  const atFigure = body.indexOf(figure);
+  const atNext = body.indexOf(next);
+  assert.ok(atBottle >= 0 && atFigure > atBottle && atNext > atFigure);
+  assert.match(post, /Jimmy/);
+  assert.match(post, /王子/);
+  assert.equal(fs.existsSync(path.join(site, "assets/images/four-beauties-bottles.jpg")), true);
+});
+
 test("photo captions and covers use the prose palette", () => {
   const css = read("css/site.css");
   assert.match(css, /\.prose figure \{/);
   assert.match(css, /\.prose figcaption \{[^}]*color:\s*var\(--ink-soft\)/);
+  assert.match(css, /\.prose figcaption \{[^}]*text-align:\s*center/);
+  assert.match(css, /\.prose figure img \{[^}]*max-width:\s*100%/);
   assert.match(css, /\.post-cover img \{[^}]*width:\s*100%/);
   assert.match(css, /\.thumb \{[^}]*width:\s*100%/);
   assert.match(css, /@media \(min-width: 800px\) \{[^}]*\.listing li:has\(\.thumb\)/);
