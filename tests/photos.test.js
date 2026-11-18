@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const test = require("node:test");
 const { createRequire } = require("module");
@@ -285,8 +286,28 @@ test("the homepage shows a thumbnail only for the post that has a cover", () => 
   assert.match(html, /沒有封面/);
 });
 
-test("the hidden sample cover is real front matter and stays members-only", () => {
-  const file = path.join(root, "content/exclusives/members-sample.md");
+test("a members-only cover stays in front matter and out of the body", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "silver-rebel-"));
+  const file = path.join(dir, "members-sample.md");
+  fs.writeFileSync(
+    file,
+    [
+      "---",
+      "title: '會員限定'",
+      "date: 2026-11-16",
+      "slug: members-sample",
+      "excerpt: '不公開'",
+      "tags:",
+      "  - a",
+      "cover: /assets/images/members-only-cover.jpg",
+      "coverAlt: 會員限定封面不該公開",
+      "members: true",
+      "---",
+      "",
+      "公開網站不該出現這句。",
+      "",
+    ].join("\n")
+  );
   const data = readRaw(file);
   assert.equal(data.members, true);
   assert.equal(data.cover, "/assets/images/members-only-cover.jpg");

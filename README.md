@@ -35,8 +35,6 @@ members: true
 
 這種文章不會有頁面，也不會出現在列表、首頁、RSS、sitemap。長文和 Digest 都適用。
 
-`content/exclusives/members-sample.md` 是守這條規則的樣稿，網站上看不到。可以留著，也可以刪。
-
 ## 照片與封面
 
 圖片放在 `assets/images/`。這個資料夾會跟網站一起發布。
@@ -96,7 +94,3 @@ npm run dev
 第一次部署若停在 `github-pages` 環境等待核准，打開該次 Actions，按核准。
 
 以後如果換網域，改 `src/_data/site.js` 的 `url`。RSS 和 sitemap 會跟著改。
-
-## 樣稿
-
-`content/exclusives/sample-layout.md` 和 `content/digests/2026-11-15.md` 是版面樣稿，標題都有「範例」。真文章來了就可以刪。
