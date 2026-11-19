@@ -1,0 +1,16 @@
+<header class="page-header">
+  <h1>{{ edition.date }} 今天的40則新聞</h1>
+</header>
+{% for group in edition.groups %}
+<section class="news-group">
+  <h2>{{ group.category }}</h2>
+  <ol>
+    {% for item in group.items %}
+    <li>
+      <a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.title }}</a>
+      <small>{{ item.source }}</small>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endfor %}

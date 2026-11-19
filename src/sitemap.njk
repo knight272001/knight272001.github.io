@@ -15,4 +15,13 @@ eleventyExcludeFromCollections: true
   </url>
   {%- endif %}
   {%- endfor %}
+  {%- if newsDays.length %}
+  <url><loc>{{ site.url }}/news/</loc></url>
+  {%- for day in newsDays %}
+  <url>
+    <loc>{{ site.url }}/news/{{ day.date }}/</loc>
+    <lastmod>{{ day.date }}</lastmod>
+  </url>
+  {%- endfor %}
+  {%- endif %}
 </urlset>
