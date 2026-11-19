@@ -91,6 +91,26 @@ coverAlt: 跟阿母在北港朝天宮前
 
 `id`、`text`、`url` 是字串。`url` 須以 `http://` 或 `https://` 開頭。`created_at` 是 UTC 的 ISO 8601。
 
+## 今天的40則新聞
+
+每天新增一個檔，路徑是 `src/_data/news/YYYY-MM-DD.json`。只新增，不改已經發布的舊檔。
+
+```json
+{
+  "date": "2026-11-19",
+  "items": [
+    {
+      "category": "政治",
+      "title": "標題",
+      "source": "來源",
+      "url": "https://example.com/story"
+    }
+  ]
+}
+```
+
+`date` 跟檔名同一天。`items` 照分類排好，同一類放在一起。頁面在 `/news/YYYY-MM-DD/`，`/news/` 顯示最新的一天，再加上更早日期的連結。首頁的「今天的40則新聞」連到最新那一天。這些頁面不進 RSS。
+
 ## 本地預覽
 
 需要 Node.js 20 或更新的版本。

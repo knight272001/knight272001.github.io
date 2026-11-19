@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "eleventy --serve",
     "build": "eleventy",
-    "test": "node --test tests/posts.test.js tests/photos.test.js tests/views.test.js tests/xposts.test.js && eleventy && node --test tests/site.test.js"
+    "test": "node --test tests/posts.test.js tests/photos.test.js tests/views.test.js tests/xposts.test.js tests/news.test.js && eleventy && node --test tests/site.test.js"
   },
   "engines": {
     "node": ">=20"

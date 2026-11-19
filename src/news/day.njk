@@ -1,0 +1,14 @@
+---
+layout: base.njk
+pagination:
+  data: newsDays
+  size: 1
+  alias: edition
+permalink: "/news/{{ edition.date }}/"
+eleventyExcludeFromCollections: true
+eleventyComputed:
+  pageTitle: "{{ edition.date }} 今天的40則新聞"
+  description: "{{ edition.date }} 今天的40則新聞"
+---
+{% include "news-edition.njk" %}
+<p class="back"><a href="/">回首頁</a></p>

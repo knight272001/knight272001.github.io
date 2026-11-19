@@ -1,0 +1,22 @@
+---
+layout: base.njk
+permalink: /news/
+eleventyExcludeFromCollections: true
+eleventyComputed:
+  pageTitle: "{% if newsDays[0] %}{{ newsDays[0].date }} 今天的40則新聞{% else %}今天的40則新聞{% endif %}"
+  description: "{% if newsDays[0] %}{{ newsDays[0].date }} 今天的40則新聞{% else %}今天的40則新聞{% endif %}"
+---
+{% set edition = newsDays[0] %}
+{% if edition %}
+{% include "news-edition.njk" %}
+{% if newsDays.length > 1 %}
+<ul class="news-archive">
+  {% for day in newsDays %}
+  {% if not loop.first %}
+  <li><a href="/news/{{ day.date }}/">{{ day.date }} 今天的40則新聞</a></li>
+  {% endif %}
+  {% endfor %}
+</ul>
+{% endif %}
+{% endif %}
+<p class="back"><a href="/">回首頁</a></p>

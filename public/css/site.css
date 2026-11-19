@@ -327,6 +327,22 @@ html[data-js] .theme-toggle {
   background: var(--bg-elev);
 }
 
+.news-today {
+  margin: 0 0 1.35rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.news-today a {
+  color: var(--accent-ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.news-today a:hover {
+  color: var(--ink);
+}
+
 .write-me {
   display: flex;
   justify-content: center;
@@ -688,6 +704,85 @@ html[data-js] .theme-toggle {
 
 .back {
   margin: 2.4rem 0 0;
+}
+
+.news-group {
+  max-width: 42rem;
+  margin: 0;
+  padding: 1.25rem 0 0.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.news-group h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: 0.04em;
+}
+
+.news-group ol {
+  margin: 0;
+  padding-left: 1.65rem;
+}
+
+.news-group li {
+  margin: 0;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.5;
+}
+
+.news-group li:last-child {
+  border-bottom: 0;
+}
+
+.news-group li::marker {
+  color: var(--accent);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.news-group a {
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+  overflow-wrap: anywhere;
+}
+
+.news-group a:hover {
+  color: var(--ink);
+}
+
+.news-group small {
+  display: block;
+  margin-top: 0.12rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.news-archive {
+  max-width: 42rem;
+  list-style: none;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.news-archive a {
+  display: block;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--accent-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.news-archive a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
 }
 
 .signup {

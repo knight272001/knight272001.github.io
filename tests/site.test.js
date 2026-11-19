@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const test = require("node:test");
 
+const { loadNewsDays } = require("../lib/news");
+
 const root = path.join(__dirname, "..");
 const site = path.join(root, "_site");
 
@@ -124,7 +126,7 @@ test("members posts are absent from every public file", () => {
 test("sitemap lists only public urls", () => {
   const sitemap = read("sitemap.xml");
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
-  assert.deepEqual(locs, [
+  const expected = [
     "https://knight272001.github.io/",
     "https://knight272001.github.io/about/",
     "https://knight272001.github.io/digests/",
@@ -134,7 +136,10 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/exclusives/four-beauties-screen-liquor/",
     "https://knight272001.github.io/exclusives/national-day-gongxi-mp-training-center/",
     "https://knight272001.github.io/newsletter/",
-  ]);
+    "https://knight272001.github.io/news/",
+    ...loadNewsDays().map((day) => `https://knight272001.github.io/news/${day.date}/`),
+  ].sort();
+  assert.deepEqual(locs, expected);
 });
 
 test("rss contains the public posts", () => {
@@ -371,6 +376,66 @@ test("x ticker follows xposts.json and stays out of feeds", () => {
     assert.doesNotMatch(textFile, /data-x-ticker|x-ticker-label|x-ticker-clock/);
     assert.doesNotMatch(textFile, new RegExp(text));
   }
+});
+
+test("daily news pages list every link and stay out of rss", () => {
+  const days = loadNewsDays();
+  const newest = days[0];
+  const home = read("index.html");
+  const day = decode(read(`news/${newest.date}/index.html`));
+  const index = decode(read("news/index.html"));
+  const feed = read("feed.xml");
+
+  assert.match(home, new RegExp(`<a href="/news/${newest.date}/">今天的40則新聞</a>`));
+  assert.match(home, /<a href="mailto:douglaswang101@gmail.com">寫信給我<\/a>/);
+  assert.match(home, /src="\/assets\/video\/cat-on-grass\.mp4"/);
+  assert.match(home, /class="x-ticker"/);
+  assert.match(home, /data-goatcounter="https:\/\/silverrebel71\.goatcounter\.com\/count"/);
+  assert.match(home, /data-views="total"/);
+  assert.match(home, /最新長文/);
+
+  assert.match(day, new RegExp(`<title>${newest.date} 今天的40則新聞｜銀髮衝冠</title>`));
+  assert.match(day, new RegExp(`<h1>${newest.date} 今天的40則新聞</h1>`));
+  assert.match(day, /<a href="\/">回首頁<\/a>/);
+  assert.deepEqual(
+    [...day.matchAll(/<h2>([^<]+)<\/h2>/g)].map((match) => match[1]),
+    newest.groups.map((group) => group.category)
+  );
+
+  const sections = [...day.matchAll(/<section class="news-group">([\s\S]*?)<\/section>/g)];
+  assert.equal(sections.length, newest.groups.length);
+  sections.forEach((section, index) => {
+    const group = newest.groups[index];
+    const items = [...section[1].matchAll(/<li>\s*<a href="([^"]+)" target="_blank" rel="noopener">([^<]+)<\/a>\s*<small>([^<]+)<\/small>\s*<\/li>/g)];
+    assert.equal(items.length, group.items.length);
+    group.items.forEach((item, itemIndex) => {
+      assert.equal(items[itemIndex][1], item.url);
+      assert.equal(items[itemIndex][2], item.title);
+      assert.equal(items[itemIndex][3], item.source);
+    });
+  });
+  const newsLinkCount = (html) => {
+    const groups = [...html.matchAll(/<section class="news-group">([\s\S]*?)<\/section>/g)];
+    return groups.reduce(
+      (sum, group) => sum + (group[1].match(/target="_blank" rel="noopener"/g) || []).length,
+      0
+    );
+  };
+  assert.equal(newsLinkCount(day), newest.items.length);
+  assert.equal(newsLinkCount(index), newest.items.length);
+  const earlier = index.match(/class="news-archive"/g);
+  if (days.length > 1) {
+    assert.equal(earlier.length, 1);
+    days.slice(1).forEach((archiveDay) => {
+      assert.match(index, new RegExp(`href="/news/${archiveDay.date}/"`));
+    });
+  } else {
+    assert.equal(earlier, null);
+  }
+
+  assert.equal(feed.match(/<item>/g).length, 4);
+  assert.doesNotMatch(feed, /\/news\/|今天的40則新聞/);
+  assert.equal(fs.existsSync(path.join(site, `news/${newest.date}/index.html`)), true);
 });
 
 test("text colors clear the contrast bar", () => {
