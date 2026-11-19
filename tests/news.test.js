@@ -16,7 +16,7 @@ function writeDay(dir, date, items) {
 
 test("today's file is forty links in four categories, newest day first", () => {
   const days = loadNewsDays();
-  assert.equal(days[0].date, "2026-11-19");
+  assert.equal(days[0].date, "2026-11-20");
   assert.equal(days[0].items.length, 40);
   assert.deepEqual(
     days[0].groups.map((group) => [group.category, group.items.length]),
@@ -27,7 +27,7 @@ test("today's file is forty links in four categories, newest day first", () => {
       ["科技", 10],
     ]
   );
-  assert.equal(days[0].groups[0].items[0].title, "習近平親赴深圳機場迎接川普，46 年來首見");
+  assert.equal(days[0].groups[0].items[0].title, "中美俄「三巨頭」峰會結束：發表和平宣言，承諾展開核對話");
   assert.equal(days[0].groups[0].items[0].source, "BBC 中文");
   assert.equal(days[0].groups[3].items[9].source, "南華早報");
 });
