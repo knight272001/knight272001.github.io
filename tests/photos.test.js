@@ -7,6 +7,7 @@ const { createRequire } = require("module");
 const { formatDisplay, formatIso, formatRss } = require("../lib/dates");
 const { createMarkdown } = require("../lib/markdown");
 const { absoluteUrl, onlyPublic, readRaw, validatePost } = require("../lib/posts");
+const { tickerModel } = require("../lib/xposts");
 
 const root = path.join(__dirname, "..");
 const requireFromEleventy = createRequire(require.resolve("@11ty/eleventy"));
@@ -23,6 +24,7 @@ function nunjucksEnv() {
   environment.addFilter("rssDate", formatRss);
   environment.addFilter("year", () => "2026");
   environment.addFilter("absoluteUrl", absoluteUrl);
+  environment.addFilter("xTicker", (items) => tickerModel(items));
   return environment;
 }
 
