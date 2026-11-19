@@ -323,6 +323,56 @@ test("photo captions and covers use the prose palette", () => {
   assert.match(css, /@media \(min-width: 800px\) \{[^}]*\.listing li:has\(\.thumb\)/);
 });
 
+test("x ticker follows xposts.json and stays out of feeds", () => {
+  const { tickerModel } = require("../lib/xposts");
+  const posts = JSON.parse(fs.readFileSync(path.join(root, "src/_data/xposts.json"), "utf8"));
+  const model = tickerModel(posts);
+  const pages = [
+    "index.html",
+    "about/index.html",
+    "404.html",
+    "newsletter/index.html",
+    "digests/index.html",
+    "exclusives/index.html",
+    "exclusives/beigang-chaotian-temple-with-mom/index.html",
+  ];
+  const css = read("css/site.css");
+
+  assert.match(css, /\.x-ticker\[hidden\]\s*\{[^}]*display:\s*none\s*!important/);
+  assert.match(css, /@keyframes x-ticker-scroll/);
+  assert.match(css, /animation-play-state:\s*paused/);
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{[\s\S]*?animation:\s*none/);
+
+  if (model.posts.length === 0) {
+    for (const rel of pages) assert.doesNotMatch(read(rel), /data-x-ticker|x-ticker-label|X 最新/);
+    for (const rel of ["feed.xml", "sitemap.xml", "robots.txt"]) {
+      assert.doesNotMatch(read(rel), /data-x-ticker|x-ticker/);
+    }
+    return;
+  }
+
+  const href = model.posts[0].url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const text = model.posts[0].text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  for (const rel of pages) {
+    const html = read(rel);
+    assert.match(html, /class="x-ticker"[^>]*\shidden\b/);
+    assert.match(html, /id="x-ticker-label">X 最新</);
+    assert.match(html, new RegExp(`href="${href}" target="_blank" rel="noopener"`));
+    assert.match(html, new RegExp(`>${text}<`));
+    assert.match(html, /<script data-x-ticker-clock>/);
+    assert.match(html, /timeZone:\s*"Asia\/Taipei"/);
+    assert.match(html, /setInterval\(sync,\s*60000\)/);
+    assert.doesNotMatch(html, /platform\.twitter|widgets\.js|platform\.x\.com/i);
+    assert.doesNotMatch(html, /LOCAL-TICKER-SAMPLE/);
+  }
+
+  for (const rel of ["feed.xml", "sitemap.xml", "robots.txt"]) {
+    const textFile = read(rel);
+    assert.doesNotMatch(textFile, /data-x-ticker|x-ticker-label|x-ticker-clock/);
+    assert.doesNotMatch(textFile, new RegExp(text));
+  }
+});
+
 test("text colors clear the contrast bar", () => {
   const css = read("css/site.css");
   const light = variables(css, /(?:^|\n):root \{\n([\s\S]*?)\n\}/);

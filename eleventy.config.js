@@ -1,6 +1,7 @@
 const { formatDisplay, formatIso, formatRss } = require("./lib/dates");
 const { createMarkdown } = require("./lib/markdown");
 const { absoluteUrl, isContentMarkdown, isHidden, onlyPublic, validatePost } = require("./lib/posts");
+const { tickerModel } = require("./lib/xposts");
 
 module.exports = function (eleventyConfig) {
   eleventyConfig.setLibrary("md", createMarkdown());
@@ -37,6 +38,7 @@ module.exports = function (eleventyConfig) {
     return formatRss(value);
   });
   eleventyConfig.addFilter("year", () => String(new Date().getUTCFullYear()));
+  eleventyConfig.addFilter("xTicker", (items) => tickerModel(items));
 
   eleventyConfig.addPassthroughCopy("assets");
   eleventyConfig.addPassthroughCopy({ public: "." });
