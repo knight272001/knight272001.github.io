@@ -311,6 +311,22 @@ html[data-js] .theme-toggle {
   }
 }
 
+.clip {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 0.4rem;
+}
+
+.clip video {
+  display: block;
+  width: 100%;
+  max-width: 22.5rem;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--bg-elev);
+}
+
 .kicker {
   margin: 0;
   color: var(--accent-ink);
