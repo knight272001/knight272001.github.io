@@ -770,8 +770,9 @@ main .wrap {
 }
 
 .x-ticker {
-  border-bottom: 1px solid var(--line);
-  background: var(--bg-elev);
+  border-bottom: 1px solid #111;
+  background: #ffe600;
+  color: #111;
   max-width: 100%;
 }
 
@@ -791,7 +792,7 @@ main .wrap {
 .x-ticker-label {
   flex: none;
   margin: 0;
-  color: var(--accent-ink);
+  color: #111;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -837,12 +838,13 @@ main .wrap {
   height: 0.28rem;
   margin-inline: 0.9rem;
   border-radius: 50%;
-  background: var(--accent);
+  background: #111;
   flex: none;
 }
 
-.x-ticker a {
-  color: var(--ink);
+.x-ticker a,
+.x-ticker a:visited {
+  color: #111;
   font-size: 0.95rem;
   line-height: 1.4;
   text-decoration: none;
@@ -850,7 +852,7 @@ main .wrap {
 }
 
 .x-ticker a:hover {
-  color: var(--accent-ink);
+  color: #111;
   text-decoration: underline;
   text-underline-offset: 0.14em;
 }
