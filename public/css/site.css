@@ -327,6 +327,32 @@ html[data-js] .theme-toggle {
   background: var(--bg-elev);
 }
 
+.write-me {
+  display: flex;
+  justify-content: center;
+  margin: 0.9rem 0 1.2rem;
+}
+
+.write-me a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.55rem 1.15rem;
+  border: 1px solid var(--seal);
+  background: var(--seal);
+  color: var(--seal-ink);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.write-me a:hover {
+  background: var(--accent-ink);
+  border-color: var(--accent-ink);
+  color: var(--bg);
+}
+
 .kicker {
   margin: 0;
   color: var(--accent-ink);
