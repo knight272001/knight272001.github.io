@@ -96,9 +96,11 @@ test("real posts render and the empty digest stays intact", () => {
   assert.match(exclusive, /2026年2月9日/);
   assert.match(exclusive, /datetime="2026-02-09"/);
   assert.match(home, /螢幕後面那本經/);
-  assert.match(home, /還沒有 Digest。/);
-  assert.match(digests, /class="empty"/);
-  assert.match(digests, /還沒有 Digest。/);
+  assert.match(home, /\/digests\/2026-11-20\//);
+  assert.match(home, /天冷了，心要定：SR71 的 11\/19 社群動態/);
+  assert.match(digests, /\/digests\/2026-11-20\//);
+  assert.match(digests, /天冷了，心要定：SR71 的 11\/19 社群動態/);
+  assert.doesNotMatch(digests, /還沒有 Digest。/);
   assert.doesNotMatch(home, /範例 Digest|範例文章|今天沒有新聞/);
   assert.doesNotMatch(digests, /範例/);
   assert.equal(fs.existsSync(path.join(site, "exclusives/sample-layout/index.html")), false);
@@ -130,6 +132,7 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/",
     "https://knight272001.github.io/about/",
     "https://knight272001.github.io/digests/",
+    "https://knight272001.github.io/digests/2026-11-20/",
     "https://knight272001.github.io/exclusives/",
     "https://knight272001.github.io/exclusives/2026-11-17-screen-behind/",
     "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
@@ -146,8 +149,10 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 4);
+  assert.equal(feed.match(/<item>/g).length, 5);
   assert.doesNotMatch(feed, /範例 Digest|範例文章|今天沒有新聞|sample-layout|2026-11-15/);
+  assert.match(feed, /天冷了，心要定：SR71 的 11\/19 社群動態/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-20\/<\/link>/);
   assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(feed, /中華民國生日快樂！想起林口公西的大操場/);
   assert.match(feed, /四大美人屏風酒/);
@@ -433,7 +438,7 @@ test("daily news pages list every link and stay out of rss", () => {
     assert.equal(earlier, null);
   }
 
-  assert.equal(feed.match(/<item>/g).length, 4);
+  assert.equal(feed.match(/<item>/g).length, 5);
   assert.doesNotMatch(feed, /\/news\/|今天的40則新聞/);
   assert.equal(fs.existsSync(path.join(site, `news/${newest.date}/index.html`)), true);
 });
