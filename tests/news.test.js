@@ -6,6 +6,8 @@ const test = require("node:test");
 
 const { loadNewsDays, newsGroups } = require("../lib/news");
 
+const NEWS_DIR = path.join(__dirname, "..", "src", "_data", "news");
+
 function writeDay(dir, date, items) {
   fs.writeFileSync(
     path.join(dir, `${date}.json`),
@@ -14,9 +16,21 @@ function writeDay(dir, date, items) {
   );
 }
 
+function newestDayOnDisk() {
+  const name = fs
+    .readdirSync(NEWS_DIR)
+    .filter((entry) => /^\d{4}-\d{2}-\d{2}\.json$/.test(entry))
+    .sort()
+    .at(-1);
+  const date = name.slice(0, -".json".length);
+  const raw = JSON.parse(fs.readFileSync(path.join(NEWS_DIR, name), "utf8"));
+  return { date, items: raw.items };
+}
+
 test("today's file is forty links in four categories, newest day first", () => {
   const days = loadNewsDays();
-  assert.equal(days[0].date, "2026-11-20");
+  const newest = newestDayOnDisk();
+  assert.equal(days[0].date, newest.date);
   assert.equal(days[0].items.length, 40);
   assert.deepEqual(
     days[0].groups.map((group) => [group.category, group.items.length]),
@@ -27,9 +41,9 @@ test("today's file is forty links in four categories, newest day first", () => {
       ["科技", 10],
     ]
   );
-  assert.equal(days[0].groups[0].items[0].title, "中美俄「三巨頭」峰會結束：發表和平宣言，承諾展開核對話");
-  assert.equal(days[0].groups[0].items[0].source, "BBC 中文");
-  assert.equal(days[0].groups[3].items[9].source, "南華早報");
+  assert.equal(days[0].groups[0].items[0].title, newest.items[0].title);
+  assert.equal(days[0].groups[0].items[0].source, newest.items[0].source);
+  assert.equal(days[0].groups[3].items[9].source, newest.items[39].source);
 });
 
 test("groups follow first-seen category order and keep item order", () => {
