@@ -95,7 +95,7 @@ test("real posts render and the empty digest stays intact", () => {
   assert.match(exclusive, /春節前，帶老娘去北港朝天宮還願/);
   assert.match(exclusive, /2026年2月9日/);
   assert.match(exclusive, /datetime="2026-02-09"/);
-  assert.match(home, /螢幕後面那本經/);
+  assert.match(home, /因應科技助長作弊歪風，韓國大考用災害示警細胞簡訊抓心存僥倖考生，49人露出馬腳/);
   assert.match(home, /\/digests\/2026-11-20\//);
   assert.match(home, /天冷了，心要定：SR71 的 11\/19 社群動態/);
   assert.match(digests, /\/digests\/2026-11-20\//);
@@ -135,6 +135,7 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/digests/2026-11-20/",
     "https://knight272001.github.io/exclusives/",
     "https://knight272001.github.io/exclusives/2026-11-17-screen-behind/",
+    "https://knight272001.github.io/exclusives/2026-11-20-korea-csat-anti-cheating/",
     "https://knight272001.github.io/exclusives/beigang-chaotian-temple-with-mom/",
     "https://knight272001.github.io/exclusives/four-beauties-screen-liquor/",
     "https://knight272001.github.io/exclusives/national-day-gongxi-mp-training-center/",
@@ -149,8 +150,10 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 5);
+  assert.equal(feed.match(/<item>/g).length, 6);
   assert.doesNotMatch(feed, /範例 Digest|範例文章|今天沒有新聞|sample-layout|2026-11-15/);
+  assert.match(feed, /因應科技助長作弊歪風，韓國大考用災害示警細胞簡訊抓心存僥倖考生，49人露出馬腳/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/2026-11-20-korea-csat-anti-cheating\/<\/link>/);
   assert.match(feed, /天冷了，心要定：SR71 的 11\/19 社群動態/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-20\/<\/link>/);
   assert.match(feed, /春節前，帶老娘去北港朝天宮還願/);
@@ -303,8 +306,8 @@ test("screen-behind exclusive is public with a cover and literal asterisks", () 
   assert.match(post, /property="og:description" content="同學會檯面下的心情，社群上的光鮮亮麗，亂世裡顧好家人、做點公益，也便是了。"/);
   assert.match(listing, /螢幕後面那本經/);
   assert.match(listing, /src="\/assets\/images\/trail-path.jpg"/);
-  assert.match(home, /src="\/assets\/images\/trail-path.jpg"/);
-  assert.match(home, /href="\/exclusives\/2026-11-17-screen-behind\/"/);
+  assert.match(home, /因應科技助長作弊歪風，韓國大考用災害示警細胞簡訊抓心存僥倖考生，49人露出馬腳/);
+  assert.match(home, /href="\/exclusives\/2026-11-20-korea-csat-anti-cheating\/"/);
 });
 
 test("four beauties post shows the bottle photo after the porcelain description", () => {
@@ -438,7 +441,7 @@ test("daily news pages list every link and stay out of rss", () => {
     assert.equal(earlier, null);
   }
 
-  assert.equal(feed.match(/<item>/g).length, 5);
+  assert.equal(feed.match(/<item>/g).length, 6);
   assert.doesNotMatch(feed, /\/news\/|今天的40則新聞/);
   assert.equal(fs.existsSync(path.join(site, `news/${newest.date}/index.html`)), true);
 });
