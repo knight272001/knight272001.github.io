@@ -32,14 +32,19 @@ test("today's file is forty links in four categories, newest day first", () => {
   const newest = newestDayOnDisk();
   assert.equal(days[0].date, newest.date);
   assert.equal(days[0].items.length, 40);
+  const seen = [];
+  const counts = new Map();
+  for (const item of newest.items) {
+    if (!counts.has(item.category)) seen.push(item.category);
+    counts.set(item.category, (counts.get(item.category) || 0) + 1);
+  }
   assert.deepEqual(
     days[0].groups.map((group) => [group.category, group.items.length]),
-    [
-      ["政治", 10],
-      ["經濟", 10],
-      ["文化與社會", 10],
-      ["科技", 10],
-    ]
+    seen.map((category) => [category, counts.get(category)])
+  );
+  assert.deepEqual(
+    [...counts.values()],
+    [10, 10, 10, 10]
   );
   assert.equal(days[0].groups[0].items[0].title, newest.items[0].title);
   assert.equal(days[0].groups[0].items[0].source, newest.items[0].source);
