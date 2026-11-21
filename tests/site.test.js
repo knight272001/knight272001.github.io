@@ -96,10 +96,11 @@ test("real posts render and the empty digest stays intact", () => {
   assert.match(exclusive, /2026年2月9日/);
   assert.match(exclusive, /datetime="2026-02-09"/);
   assert.match(home, /因應科技助長作弊歪風，韓國大考用災害示警細胞簡訊抓心存僥倖考生，49人露出馬腳/);
-  assert.match(home, /\/digests\/2026-11-20\//);
-  assert.match(home, /天冷了，心要定：SR71 的 11\/19 社群動態/);
+  assert.match(home, /\/digests\/2026-11-21\//);
+  assert.match(home, /作弊作弊，臺灣要補強防弊：SR71 的 11\/20 社群動態/);
+  assert.match(digests, /\/digests\/2026-11-21\//);
+  assert.match(digests, /作弊作弊，臺灣要補強防弊：SR71 的 11\/20 社群動態/);
   assert.match(digests, /\/digests\/2026-11-20\//);
-  assert.match(digests, /天冷了，心要定：SR71 的 11\/19 社群動態/);
   assert.doesNotMatch(digests, /還沒有 Digest。/);
   assert.doesNotMatch(home, /範例 Digest|範例文章|今天沒有新聞/);
   assert.doesNotMatch(digests, /範例/);
@@ -133,6 +134,7 @@ test("sitemap lists only public urls", () => {
     "https://knight272001.github.io/about/",
     "https://knight272001.github.io/digests/",
     "https://knight272001.github.io/digests/2026-11-20/",
+    "https://knight272001.github.io/digests/2026-11-21/",
     "https://knight272001.github.io/exclusives/",
     "https://knight272001.github.io/exclusives/2026-11-17-screen-behind/",
     "https://knight272001.github.io/exclusives/2026-11-20-korea-csat-anti-cheating/",
@@ -150,8 +152,10 @@ test("rss contains the public posts", () => {
   const feed = decode(read("feed.xml"));
   assert.match(feed, /^<\?xml/);
   assert.match(feed, /<rss /);
-  assert.equal(feed.match(/<item>/g).length, 6);
+  assert.equal(feed.match(/<item>/g).length, 7);
   assert.doesNotMatch(feed, /範例 Digest|範例文章|今天沒有新聞|sample-layout|2026-11-15/);
+  assert.match(feed, /作弊作弊，臺灣要補強防弊：SR71 的 11\/20 社群動態/);
+  assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/digests\/2026-11-21\/<\/link>/);
   assert.match(feed, /因應科技助長作弊歪風，韓國大考用災害示警細胞簡訊抓心存僥倖考生，49人露出馬腳/);
   assert.match(feed, /<link>https:\/\/knight272001\.github\.io\/exclusives\/2026-11-20-korea-csat-anti-cheating\/<\/link>/);
   assert.match(feed, /天冷了，心要定：SR71 的 11\/19 社群動態/);
@@ -441,7 +445,7 @@ test("daily news pages list every link and stay out of rss", () => {
     assert.equal(earlier, null);
   }
 
-  assert.equal(feed.match(/<item>/g).length, 6);
+  assert.equal(feed.match(/<item>/g).length, 7);
   assert.doesNotMatch(feed, /\/news\/|今天的40則新聞/);
   assert.equal(fs.existsSync(path.join(site, `news/${newest.date}/index.html`)), true);
 });
