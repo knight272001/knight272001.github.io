@@ -19,7 +19,7 @@ function post(partial) {
 function clockScript() {
   const layout = fs.readFileSync(path.join(root, "src/_includes/base.njk"), "utf8");
   const match = layout.match(/<script data-x-ticker-clock>([\s\S]*?)<\/script>/);
-  assert.ok(match, "base layout should include the Taipei clock script");
+  assert.ok(match, "base layout should include the ticker clock script");
   return match[1];
 }
 
@@ -146,41 +146,44 @@ test("short posts repeat so the marquee can loop, without repeating the accessib
   assert.ok(model.duration >= 24);
 });
 
-test("Taipei clock shows the bar only from 05:00 inclusive to 22:00 exclusive", () => {
+test("ticker stays visible at every hour", () => {
   const source = clockScript();
-  assert.match(source, /timeZone:\s*"Asia\/Taipei"/);
-  assert.match(source, /hourCycle:\s*"h23"/);
+  const layout = fs.readFileSync(path.join(root, "src/_includes/base.njk"), "utf8");
+  assert.match(source, /bar\.hidden\s*=\s*false/);
+  assert.doesNotMatch(source, /bar\.hidden\s*=\s*true/);
+  assert.doesNotMatch(source, /5 \* 60|22 \* 60|Asia\/Taipei/);
+  assert.doesNotMatch(layout, /class="x-ticker"[^>]*\shidden\b/);
 
   const cases = [
-    ["2026-11-18T20:59:00Z", true],
-    ["2026-11-18T21:00:00Z", false],
-    ["2026-11-19T01:28:00Z", false],
-    ["2026-11-19T13:59:00Z", false],
-    ["2026-11-19T14:00:00Z", true],
-    ["2026-11-18T16:00:00Z", true],
-    ["2026-11-19T15:30:00Z", true],
+    "2026-11-18T16:00:00Z",
+    "2026-11-18T20:59:00Z",
+    "2026-11-18T21:00:00Z",
+    "2026-11-19T01:28:00Z",
+    "2026-11-19T13:59:00Z",
+    "2026-11-19T14:00:00Z",
+    "2026-11-19T15:30:00Z",
   ];
 
-  for (const [iso, hidden] of cases) {
+  for (const iso of cases) {
     const clock = runClock(source, iso);
-    assert.equal(clock.bar.hidden, hidden, iso);
-    assert.equal(clock.intervalMs, 60000);
+    assert.equal(clock.bar.hidden, false, iso);
+    assert.equal(clock.intervalMs, 0);
   }
 });
 
-test("the minute timer reveals and hides the bar without a reload", () => {
+test("the clock script does not hide the bar when the hour changes", () => {
   const source = clockScript();
   const clock = runClock(source, "2026-11-19T13:59:00Z");
   assert.equal(clock.bar.hidden, false);
   clock.setIso("2026-11-19T14:00:00Z");
   clock.tick();
-  assert.equal(clock.bar.hidden, true);
-  clock.setIso("2026-11-18T21:00:00Z");
+  assert.equal(clock.bar.hidden, false);
+  clock.setIso("2026-11-18T16:00:00Z");
   clock.tick();
   assert.equal(clock.bar.hidden, false);
 });
 
-test("a 12-hour Intl fallback still uses Taipei hours", () => {
+test("a 12-hour Intl fallback still leaves the bar visible", () => {
   const source = clockScript();
   function intl(hour, minute, dayPeriod) {
     return {
@@ -198,10 +201,10 @@ test("a 12-hour Intl fallback still uses Taipei hours", () => {
     };
   }
 
-  assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("4", "59", "AM")).bar.hidden, true);
+  assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("4", "59", "AM")).bar.hidden, false);
   assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("5", "00", "AM")).bar.hidden, false);
   assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("1", "30", "PM")).bar.hidden, false);
   assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("9", "59", "PM")).bar.hidden, false);
-  assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("10", "00", "PM")).bar.hidden, true);
-  assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("12", "00", "AM")).bar.hidden, true);
+  assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("10", "00", "PM")).bar.hidden, false);
+  assert.equal(runClock(source, "2026-01-01T00:00:00Z", intl("12", "00", "AM")).bar.hidden, false);
 });

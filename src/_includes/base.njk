@@ -75,7 +75,7 @@
   </header>
   {% set ticker = xposts | xTicker %}
   {% if ticker.posts.length %}
-  <div class="x-ticker" data-x-ticker hidden role="region" aria-labelledby="x-ticker-label" style="--x-ticker-duration: {{ ticker.duration }}s">
+  <div class="x-ticker" data-x-ticker role="region" aria-labelledby="x-ticker-label" style="--x-ticker-duration: {{ ticker.duration }}s">
     <div class="wrap x-ticker-inner">
       <p class="x-ticker-label" id="x-ticker-label">X 最新</p>
       <div class="x-ticker-viewport">
@@ -97,32 +97,7 @@
   (function () {
     var bar = document.querySelector("[data-x-ticker]");
     if (!bar) return;
-
-    function sync() {
-      var parts = new Intl.DateTimeFormat("en-US", {
-        timeZone: "Asia/Taipei",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).formatToParts(new Date());
-      var hour = NaN;
-      var minute = NaN;
-      var dayPeriod = "";
-      var i;
-      for (i = 0; i < parts.length; i++) {
-        if (parts[i].type === "hour") hour = Number(parts[i].value);
-        else if (parts[i].type === "minute") minute = Number(parts[i].value);
-        else if (parts[i].type === "dayPeriod") dayPeriod = parts[i].value;
-      }
-      if (hour === 24) hour = 0;
-      if (dayPeriod && /pm/i.test(dayPeriod) && hour < 12) hour += 12;
-      if (dayPeriod && /am/i.test(dayPeriod) && hour === 12) hour = 0;
-      var minutes = hour * 60 + minute;
-      bar.hidden = !(Number.isFinite(minutes) && minutes >= 5 * 60 && minutes < 22 * 60);
-    }
-
-    sync();
-    setInterval(sync, 60000);
+    bar.hidden = false;
   })();
   </script>
   {% endif %}

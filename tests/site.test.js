@@ -372,13 +372,14 @@ test("x ticker follows xposts.json and stays out of feeds", () => {
   const text = model.posts[0].text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   for (const rel of pages) {
     const html = read(rel);
-    assert.match(html, /class="x-ticker"[^>]*\shidden\b/);
+    assert.match(html, /class="x-ticker"/);
+    assert.doesNotMatch(html, /class="x-ticker"[^>]*\shidden\b/);
     assert.match(html, /id="x-ticker-label">X 最新</);
     assert.match(html, new RegExp(`href="${href}" target="_blank" rel="noopener"`));
     assert.match(html, new RegExp(`>${text}<`));
     assert.match(html, /<script data-x-ticker-clock>/);
-    assert.match(html, /timeZone:\s*"Asia\/Taipei"/);
-    assert.match(html, /setInterval\(sync,\s*60000\)/);
+    assert.match(html, /bar\.hidden\s*=\s*false/);
+    assert.doesNotMatch(html, /5 \* 60|22 \* 60|Asia\/Taipei/);
     assert.doesNotMatch(html, /platform\.twitter|widgets\.js|platform\.x\.com/i);
     assert.doesNotMatch(html, /LOCAL-TICKER-SAMPLE/);
   }
