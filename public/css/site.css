@@ -327,6 +327,56 @@ html[data-js] .theme-toggle {
   background: var(--bg-elev);
 }
 
+.featured-artwork {
+  width: min(100%, 560px);
+  margin: 1.35rem auto;
+  padding: 8px 8px 12px;
+  background: #f3ead8;
+  border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(120, 86, 48, 0.1), 0 10px 24px rgba(28, 22, 18, 0.12);
+}
+
+.featured-artwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.featured-artwork figcaption {
+  margin: 0.7rem 0 0;
+  color: #1c1612;
+  text-align: center;
+  line-height: 1.45;
+}
+
+.featured-artwork-title {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.featured-artwork-en {
+  display: block;
+  margin-top: 0.12rem;
+  color: #5c5148;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .featured-artwork {
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+  }
+
+  .featured-artwork:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1px 0 rgba(120, 86, 48, 0.1), 0 16px 32px rgba(28, 22, 18, 0.16);
+  }
+}
+
 .news-today {
   margin: 0 0 1.35rem;
   font-size: 1.125rem;
